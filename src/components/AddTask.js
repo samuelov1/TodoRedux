@@ -2,7 +2,10 @@ import React, { Component } from "react";
 import { Icon, Box, Typography } from "@material-ui/core";
 import { Add } from "@material-ui/icons";
 import { withStyles } from "@material-ui/styles";
+import { connect } from "react-redux";
+
 import TaskForm from "./TaskForm";
+import { addTask } from "../redux/actions";
 
 const styles = {
   root: {
@@ -26,16 +29,11 @@ class AddTask extends Component {
     };
 
     this.handleClick = this.handleClick.bind(this);
-    this.addTask = this.addTask.bind(this);
     this.closeForm = this.closeForm.bind(this);
   }
 
   handleClick() {
     this.setState({ isEnabled: true });
-  }
-
-  addTask(task) {
-    console.log("Adding task!");
   }
 
   closeForm(e) {
@@ -44,7 +42,7 @@ class AddTask extends Component {
   }
 
   render() {
-    const { classes } = this.props;
+    const { classes, addTask } = this.props;
     const { isEnabled } = this.state;
 
     const placeholder = (
@@ -59,7 +57,7 @@ class AddTask extends Component {
           <Add />
         </Icon>
         {isEnabled ? (
-          <TaskForm onSubmit={this.addTask} onCancel={this.closeForm} />
+          <TaskForm onSubmit={addTask} onCancel={this.closeForm} />
         ) : (
           placeholder
         )}
@@ -68,4 +66,9 @@ class AddTask extends Component {
   }
 }
 
-export default withStyles(styles)(AddTask);
+export default withStyles(styles)(
+  connect(
+    null,
+    { addTask }
+  )(AddTask)
+);
