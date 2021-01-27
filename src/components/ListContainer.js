@@ -4,6 +4,7 @@ import { makeStyles } from "@material-ui/styles";
 
 import ListHeader from "./ListHeader";
 import TaskList from "./TaskList";
+import AddTask from "./AddTask";
 
 const useStyle = makeStyles({
   container: {
@@ -17,6 +18,7 @@ const ListContainer = () => {
     <Container className={classes.container} maxWidth="md">
       <ListHeader />
       <TaskList />
+      <AddTask />
     </Container>
   );
 };
