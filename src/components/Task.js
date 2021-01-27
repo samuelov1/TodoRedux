@@ -7,6 +7,9 @@ import {
 } from "@material-ui/core";
 import { RadioButtonChecked, RadioButtonUnchecked } from "@material-ui/icons";
 import { withStyles } from "@material-ui/styles";
+import { connect } from "react-redux";
+
+import { toggleTaskCompleted } from "../redux/actions";
 
 const styles = {
   listItem: {
@@ -21,8 +24,8 @@ class Task extends Component {
   }
 
   render() {
-    const { id, content } = this.props.task;
-    const { classes } = this.props;
+    const { id, content, isCompleted } = this.props.task;
+    const { classes, toggleTaskCompleted } = this.props;
 
     return (
       <ListItem className={classes.listItem} button disableRipple>
@@ -32,6 +35,8 @@ class Task extends Component {
             checkedIcon={<RadioButtonChecked />}
             tabIndex={2}
             disableRipple
+            checked={isCompleted}
+            onChange={() => toggleTaskCompleted(id)}
           />
         </ListItemIcon>
         <ListItemText id={`text-label-${id}`} primary={content} />
@@ -40,4 +45,7 @@ class Task extends Component {
   }
 }
 
-export default withStyles(styles)(Task);
+export default connect(
+  null,
+  { toggleTaskCompleted }
+)(withStyles(styles)(Task));
