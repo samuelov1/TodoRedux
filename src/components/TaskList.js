@@ -1,6 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
-import { getAllTasks } from "../redux/selectors";
+import { getFilteredTasks } from "../redux/selectors";
 import { List } from "@material-ui/core";
 
 import Task from "./Task";
@@ -14,7 +14,7 @@ const TaskList = ({ tasks }) => {
 };
 
 const mapStateToProps = state => {
-  const tasks = getAllTasks(state);
+  const tasks = getFilteredTasks(state);
   return { tasks };
 };
 

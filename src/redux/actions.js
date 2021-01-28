@@ -13,3 +13,7 @@ export const toggleTaskCompleted = id => ({
   type: "TOGGLE_TASK_COMPLETED",
   payload: id
 });
+
+export const toggleShowCompleted = () => ({
+  type: "TOGGLE_SHOW_COMPLETED"
+});

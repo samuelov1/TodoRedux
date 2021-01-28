@@ -8,6 +8,10 @@ import {
   ListItemText
 } from "@material-ui/core";
 import { MoreHoriz, CheckCircleOutline } from "@material-ui/icons";
+import { connect } from "react-redux";
+
+import { toggleShowCompleted } from "../redux/actions";
+import { getShowCompletedTasks } from "../redux/selectors";
 
 class OptionsMenu extends Component {
   constructor(props) {
@@ -27,7 +31,9 @@ class OptionsMenu extends Component {
     this.setState({ anchorEl: button });
   }
 
-  handleMenuItemClick() {
+  handleMenuItemClick(actionName) {
+    const action = this.props[actionName];
+    action();
     this.setState({ anchorEl: null });
   }
 
@@ -37,6 +43,7 @@ class OptionsMenu extends Component {
 
   render() {
     const { anchorEl } = this.state;
+    const { showCompletedTasks } = this.props;
 
     return (
       <>
@@ -61,11 +68,15 @@ class OptionsMenu extends Component {
           open={Boolean(anchorEl)}
           onClose={this.handleClose}
         >
-          <MenuItem onClick={this.handleMenuItemClick}>
+          <MenuItem
+            onClick={() => this.handleMenuItemClick("toggleShowCompleted")}
+          >
             <ListItemIcon>
-              <CheckCircleOutline/>
+              <CheckCircleOutline />
             </ListItemIcon>
-            <ListItemText>Show completed tasks</ListItemText>
+            <ListItemText>
+              {showCompletedTasks ? "Hide" : "Show"} completed tasks
+            </ListItemText>
           </MenuItem>
         </Menu>
       </>
@@ -73,4 +84,12 @@ class OptionsMenu extends Component {
   }
 }
 
-export default OptionsMenu;
+const mapStateToProps = state => {
+  const showCompletedTasks = getShowCompletedTasks(state);
+  return { showCompletedTasks };
+};
+
+export default connect(
+  mapStateToProps,
+  { toggleShowCompleted }
+)(OptionsMenu);
