@@ -9,15 +9,17 @@ export const getFilteredTasks = store => {
   let tasks = getTasksState(store).tasks;
   const selectedSortingOption = getSelectedSortingOption(store);
   const showCompletedTasks = getShowCompletedTasks(store);
+  const isSortingReversed = getIsSortingReversed(store);
+
+  tasks = tasks.filter(task => showCompletedTasks || !task.isCompleted);
 
   if (selectedSortingOption) {
     const sortFunction = selectedSortingOption.sortFunction;
-    tasks = tasks.sort(sortFunction);
+    tasks.sort(sortFunction);
+    if (isSortingReversed) tasks.reverse();
   }
 
-  return tasks.filter(task => {
-    return showCompletedTasks || !task.isCompleted;
-  });
+  return tasks;
 };
 
 export const getShowCompletedTasks = store => {
@@ -37,4 +39,8 @@ export const getSelectedSortingOption = store => {
     );
   }
   return null;
+};
+
+export const getIsSortingReversed = store => {
+  return getFiltersState(store).isReversed;
 };

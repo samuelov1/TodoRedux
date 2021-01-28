@@ -22,7 +22,8 @@ const reducer = (state = initialState, action) => {
     case "SET_SELECTED_SORTING_OPTION": {
       return {
         ...state,
-        selectedSortingOption: action.payload
+        selectedSortingOption: action.payload,
+        isReversed: false
       };
     }
     case "TOGGLE_SORT_REVERSED": {
