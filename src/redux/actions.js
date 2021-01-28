@@ -26,3 +26,8 @@ export const setSelectedSortingOption = id => ({
 export const toggleSortReversed = () => ({
   type: "TOGGLE_SORT_REVERSED"
 });
+
+export const editTask = task => ({
+  type: "EDIT_TASK",
+  payload: task
+});

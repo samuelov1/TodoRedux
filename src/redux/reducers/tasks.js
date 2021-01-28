@@ -26,6 +26,18 @@ const reducer = (state = initialState, action) => {
         tasks: updatedTasks
       };
     }
+    case "EDIT_TASK": {
+      const editedTask = action.payload;
+      const updatedTasks = state.tasks.map(task => {
+        if (task.id === editedTask.id) {
+          return editedTask;
+        }
+        return task;
+      });
+      return {
+        tasks: updatedTasks
+      };
+    }
     default:
       return state;
   }
