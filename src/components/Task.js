@@ -5,7 +5,7 @@ import {
   Checkbox,
   ListItemText
 } from "@material-ui/core";
-import { RadioButtonChecked, RadioButtonUnchecked } from "@material-ui/icons";
+import { CheckCircle, RadioButtonUnchecked } from "@material-ui/icons";
 import { withStyles } from "@material-ui/styles";
 import { connect } from "react-redux";
 
@@ -15,6 +15,10 @@ const styles = {
   listItem: {
     padding: "3px 0px",
     borderBottom: "1px solid rgba(50, 50, 50, 0.1)"
+  },
+  completed: {
+    textDecoration: "line-through",
+    color: "rgba(50, 50, 50, 0.5)"
   }
 };
 
@@ -32,14 +36,18 @@ class Task extends Component {
         <ListItemIcon>
           <Checkbox
             icon={<RadioButtonUnchecked />}
-            checkedIcon={<RadioButtonChecked />}
+            checkedIcon={<CheckCircle color="action" />}
             tabIndex={2}
             disableRipple
             checked={isCompleted}
             onChange={() => toggleTaskCompleted(id)}
           />
         </ListItemIcon>
-        <ListItemText id={`text-label-${id}`} primary={content} />
+        <ListItemText
+          className={isCompleted ? classes.completed : ""}
+          id={`text-label-${id}`}
+          primary={content}
+        />
       </ListItem>
     );
   }
