@@ -6,8 +6,15 @@ export const getAllTasks = store => {
 };
 
 export const getFilteredTasks = store => {
-  const tasks = getTasksState(store).tasks;
+  let tasks = getTasksState(store).tasks;
+  const selectedSortingOption = getSelectedSortingOption(store);
   const showCompletedTasks = getShowCompletedTasks(store);
+
+  if (selectedSortingOption) {
+    const sortFunction = selectedSortingOption.sortFunction;
+    tasks = tasks.sort(sortFunction);
+  }
+
   return tasks.filter(task => {
     return showCompletedTasks || !task.isCompleted;
   });
@@ -15,4 +22,19 @@ export const getFilteredTasks = store => {
 
 export const getShowCompletedTasks = store => {
   return getFiltersState(store).showCompletedTasks;
+};
+
+export const getSortingOptions = store => {
+  return getFiltersState(store).sortingOptions;
+};
+
+export const getSelectedSortingOption = store => {
+  const selectedOptionId = getFiltersState(store).selectedSortingOption;
+  if (selectedOptionId) {
+    return (
+      selectedOptionId &&
+      getSortingOptions(store).find(options => options.id === selectedOptionId)
+    );
+  }
+  return null;
 };

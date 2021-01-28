@@ -5,13 +5,22 @@ import {
   Menu,
   MenuItem,
   ListItemIcon,
-  ListItemText
+  ListItemText,
+  Divider
 } from "@material-ui/core";
-import { MoreHoriz, CheckCircleOutline } from "@material-ui/icons";
+import { MoreHoriz, CheckCircleOutline, Sort } from "@material-ui/icons";
 import { connect } from "react-redux";
 
-import { toggleShowCompleted } from "../redux/actions";
-import { getShowCompletedTasks } from "../redux/selectors";
+import {
+  toggleShowCompleted,
+  setSelectedSortingOption
+} from "../redux/actions";
+
+import {
+  getShowCompletedTasks,
+  getSortingOptions,
+  getSelectedSortingOption
+} from "../redux/selectors";
 
 class OptionsMenu extends Component {
   constructor(props) {
@@ -31,9 +40,9 @@ class OptionsMenu extends Component {
     this.setState({ anchorEl: button });
   }
 
-  handleMenuItemClick(actionName) {
+  handleMenuItemClick(actionName, arg) {
     const action = this.props[actionName];
-    action();
+    action(arg);
     this.setState({ anchorEl: null });
   }
 
@@ -43,7 +52,27 @@ class OptionsMenu extends Component {
 
   render() {
     const { anchorEl } = this.state;
-    const { showCompletedTasks } = this.props;
+    const { showCompletedTasks, sortingOptions, selectedSortingOption } = this.props;
+
+    const sortingOptionsMenuItems = sortingOptions.map(option => {
+      const isSelected = (selectedSortingOption && option.id === selectedSortingOption.id) ;
+
+      return (
+        <MenuItem
+          key={option.id}
+          onClick={() =>
+            this.handleMenuItemClick("setSelectedSortingOption", option.id)
+          }
+          dense
+          selected={isSelected}
+        >
+          <ListItemIcon>
+            <Sort />
+          </ListItemIcon>
+          <ListItemText>Sort By {option.name}</ListItemText>
+        </MenuItem>
+      );
+    });
 
     return (
       <>
@@ -68,8 +97,11 @@ class OptionsMenu extends Component {
           open={Boolean(anchorEl)}
           onClose={this.handleClose}
         >
+          {sortingOptionsMenuItems}
+          <Divider />
           <MenuItem
             onClick={() => this.handleMenuItemClick("toggleShowCompleted")}
+            dense
           >
             <ListItemIcon>
               <CheckCircleOutline />
@@ -86,10 +118,12 @@ class OptionsMenu extends Component {
 
 const mapStateToProps = state => {
   const showCompletedTasks = getShowCompletedTasks(state);
-  return { showCompletedTasks };
+  const sortingOptions = getSortingOptions(state);
+  const selectedSortingOption = getSelectedSortingOption(state);
+  return { showCompletedTasks, sortingOptions, selectedSortingOption };
 };
 
 export default connect(
   mapStateToProps,
-  { toggleShowCompleted }
+  { toggleShowCompleted, setSelectedSortingOption }
 )(OptionsMenu);
