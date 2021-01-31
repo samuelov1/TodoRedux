@@ -14,20 +14,20 @@ import TaskContextMenu from "./TaskContextMenu";
 import TaskForm from "./TaskForm";
 import DeleteDialog from "./DeleteDialog";
 
-const styles = {
+const styles = ({ palette }) => ({
   listItem: {
     padding: "3px 0px",
-    borderBottom: "1px solid rgba(50, 50, 50, 0.1)"
+    borderBottom: palette.divider
   },
   completed: {
     textDecoration: "line-through",
-    color: "rgba(50, 50, 50, 0.5)"
+    color: palette.action.disabled
   },
   editIcon: {
     margin: "9px 0 0 9px",
     alignSelf: "flex-start"
   }
-};
+});
 
 class Task extends Component {
   constructor(props) {
