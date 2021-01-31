@@ -9,9 +9,10 @@ import { CheckCircle, RadioButtonUnchecked, Edit } from "@material-ui/icons";
 import { withStyles } from "@material-ui/styles";
 import { connect } from "react-redux";
 
-import { toggleTaskCompleted, editTask } from "../redux/actions";
+import { toggleTaskCompleted, editTask, deleteTask } from "../redux/actions";
 import TaskContextMenu from "./TaskContextMenu";
 import TaskForm from "./TaskForm";
+import DeleteDialog from "./DeleteDialog";
 
 const styles = {
   listItem: {
@@ -37,9 +38,12 @@ class Task extends Component {
     };
 
     this.contextMenu = React.createRef();
+    this.deleteDialog = React.createRef();
+
     this.handleClick = this.handleClick.bind(this);
     this.toggleEditMode = this.toggleEditMode.bind(this);
     this.handleEdit = this.handleEdit.bind(this);
+    this.handleDelete = this.handleDelete.bind(this);
   }
 
   handleClick(e) {
@@ -59,9 +63,13 @@ class Task extends Component {
     this.props.editTask(editedTask);
   }
 
+  handleDelete() {
+    this.deleteDialog.current.open();
+  }
+
   render() {
     const { id, content, isCompleted } = this.props.task;
-    const { classes, toggleTaskCompleted, task } = this.props;
+    const { classes, toggleTaskCompleted, task, deleteTask } = this.props;
     const { editMode } = this.state;
 
     const itemContent = editMode ? (
@@ -92,7 +100,11 @@ class Task extends Component {
           id={`text-label-${id}`}
           primary={content}
         />
-        <TaskContextMenu ref={this.contextMenu} onEdit={this.toggleEditMode} />
+        <TaskContextMenu
+          ref={this.contextMenu}
+          onEdit={this.toggleEditMode}
+          onDelete={this.handleDelete}
+        />
       </>
     );
 
@@ -104,6 +116,10 @@ class Task extends Component {
         disableRipple
       >
         {itemContent}
+        <DeleteDialog
+          ref={this.deleteDialog}
+          onConfirm={() => deleteTask(id)}
+        />
       </ListItem>
     );
   }
@@ -111,5 +127,5 @@ class Task extends Component {
 
 export default connect(
   null,
-  { toggleTaskCompleted, editTask }
+  { toggleTaskCompleted, editTask, deleteTask }
 )(withStyles(styles)(Task));
