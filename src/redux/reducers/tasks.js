@@ -38,6 +38,13 @@ const reducer = (state = initialState, action) => {
         tasks: updatedTasks
       };
     }
+    case "DELETE_TASK": {
+      const id = action.payload;
+      const updatedTasks = state.tasks.filter(task => task.id !== id);
+      return {
+        tasks: updatedTasks
+      };
+    }
     default:
       return state;
   }
