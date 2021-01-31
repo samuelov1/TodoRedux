@@ -36,3 +36,7 @@ export const deleteTask = id => ({
   type: "DELETE_TASK",
   payload: id
 });
+
+export const toggleDarkMode = () => ({
+  type: "TOGGLE_DARK_MODE"
+})

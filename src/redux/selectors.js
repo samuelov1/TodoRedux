@@ -1,5 +1,6 @@
 const getTasksState = store => store.tasks;
 const getFiltersState = store => store.filters;
+const getThemeState = store => store.theme;
 
 export const getAllTasks = store => {
   return getTasksState(store).tasks;
@@ -43,4 +44,8 @@ export const getSelectedSortingOption = store => {
 
 export const getIsSortingReversed = store => {
   return getFiltersState(store).isReversed;
+};
+
+export const getDarkMode = store => {
+  return getThemeState(store).darkMode;
 };
