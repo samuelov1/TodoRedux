@@ -23,6 +23,7 @@ import TaskContextMenu from "./TaskContextMenu";
 import TaskForm from "./TaskForm";
 import TaskList from "./TaskList";
 import DeleteDialog from "./DeleteDialog";
+import AddTask from "./AddTask";
 
 const styles = ({ palette }) => ({
   listItem: {
@@ -124,6 +125,7 @@ class Task extends Component {
           unmountOnExit
         >
           <TaskList tasks={subtasks} />
+          <AddTask parentTaskId={id} />
         </Collapse>
       );
 

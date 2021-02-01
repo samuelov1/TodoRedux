@@ -5,7 +5,7 @@ import { withStyles } from "@material-ui/styles";
 import { connect } from "react-redux";
 
 import TaskForm from "./TaskForm";
-import { addTask } from "../redux/actions";
+import { addTask, addSubtask } from "../redux/actions";
 
 const styles = {
   root: {
@@ -42,7 +42,7 @@ class AddTask extends Component {
   }
 
   render() {
-    const { classes, addTask } = this.props;
+    const { classes, addTask, addSubtask, parentTaskId } = this.props;
     const { isEnabled } = this.state;
 
     const placeholder = (
@@ -57,7 +57,12 @@ class AddTask extends Component {
           <Add />
         </Icon>
         {isEnabled ? (
-          <TaskForm onSubmit={addTask} onCancel={this.closeForm} />
+          <TaskForm
+            onSubmit={
+              parentTaskId ? task => addSubtask(task, parentTaskId) : addTask
+            }
+            onCancel={this.closeForm}
+          />
         ) : (
           placeholder
         )}
@@ -69,6 +74,6 @@ class AddTask extends Component {
 export default withStyles(styles)(
   connect(
     null,
-    { addTask }
+    { addTask, addSubtask }
   )(AddTask)
 );
