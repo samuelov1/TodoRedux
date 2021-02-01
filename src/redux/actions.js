@@ -1,4 +1,4 @@
-let nextId = 3;
+let nextId = 7;
 
 export const addTask = task => ({
   type: "ADD_TODO",
@@ -39,4 +39,16 @@ export const deleteTask = id => ({
 
 export const toggleDarkMode = () => ({
   type: "TOGGLE_DARK_MODE"
-})
+});
+
+export const addSubtask = (subtask, parentId) => ({
+  type: "ADD_SUBTASK",
+  payload: {
+    subtask: {
+      id: ++nextId,
+      isCompleted: false,
+      ...subtask
+    },
+    parentId
+  }
+});
