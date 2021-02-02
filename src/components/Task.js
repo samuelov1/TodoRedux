@@ -13,12 +13,18 @@ import {
   RadioButtonUnchecked,
   Edit,
   ExpandLess,
-  ExpandMore
+  ExpandMore,
+  Add
 } from "@material-ui/icons";
 import { withStyles } from "@material-ui/styles";
 import { connect } from "react-redux";
 
-import { toggleTaskCompleted, editTask, deleteTask } from "../redux/actions";
+import {
+  toggleTaskCompleted,
+  editTask,
+  deleteTask,
+  addSubtask
+} from "../redux/actions";
 import TaskContextMenu from "./TaskContextMenu";
 import TaskForm from "./TaskForm";
 import TaskList from "./TaskList";
@@ -28,7 +34,7 @@ import AddTask from "./AddTask";
 const styles = ({ palette }) => ({
   listItem: {
     padding: "3px 0px",
-    borderBottom: palette.divider
+    borderBottom: "1px solid " + palette.divider
   },
   completed: {
     textDecoration: "line-through",
@@ -49,7 +55,8 @@ class Task extends Component {
 
     this.state = {
       editMode: false,
-      sublistOpen: false
+      sublistOpen: false,
+      addSubtaskMode: false
     };
 
     this.contextMenu = React.createRef();
@@ -60,6 +67,8 @@ class Task extends Component {
     this.handleEdit = this.handleEdit.bind(this);
     this.handleDelete = this.handleDelete.bind(this);
     this.toggleSublist = this.toggleSublist.bind(this);
+    this.toggleAddSubtask = this.toggleAddSubtask.bind(this);
+    this.handleAddSublist = this.handleAddSublist.bind(this);
   }
 
   handleClick(e) {
@@ -83,21 +92,34 @@ class Task extends Component {
     this.deleteDialog.current.open();
   }
 
+  toggleAddSubtask() {
+    if (this.props.task.subtasks) {
+      this.setState({ sublistOpen: true, addSubtaskMode: true });
+    } else {
+      this.setState(state => ({ addSubtaskMode: !state.addSubtaskMode }));
+    }
+  }
+
   toggleSublist() {
     this.setState(state => ({ sublistOpen: !state.sublistOpen }));
+  }
+
+  handleAddSublist(subtask) {
+    this.props.addSubtask(subtask, this.props.task.id);
+    this.setState({ sublistOpen: true });
   }
 
   render() {
     const { id, content, isCompleted, subtasks } = this.props.task;
     const { classes, toggleTaskCompleted, task, deleteTask } = this.props;
-    const { editMode, sublistOpen } = this.state;
+    const { editMode, addSubtaskMode, sublistOpen } = this.state;
 
     if (editMode) {
       return (
         <ListItem>
           <ListItemIcon className={classes.editIcon}>
             <Edit />
-          </ListItemIcon>{" "}
+          </ListItemIcon>
           <TaskForm
             task={task}
             onCancel={this.toggleEditMode}
@@ -140,10 +162,21 @@ class Task extends Component {
           </IconButton>
         </ListItemSecondaryAction>
       );
+    } else if (addSubtaskMode) {
+      sublist = (
+        <div className={classes.sublist}>
+          <ListItem>
+            <TaskForm
+              onCancel={this.toggleAddSubtask}
+              onSubmit={this.handleAddSublist}
+            />
+          </ListItem>
+        </div>
+      );
     }
 
     return (
-      <div>
+      <div className={classes.root}>
         <ListItem
           className={classes.listItem}
           onContextMenu={this.handleClick}
@@ -172,6 +205,7 @@ class Task extends Component {
           ref={this.contextMenu}
           onEdit={this.toggleEditMode}
           onDelete={this.handleDelete}
+          onAddSubtask={this.toggleAddSubtask}
         />
         <DeleteDialog
           ref={this.deleteDialog}
@@ -185,5 +219,5 @@ class Task extends Component {
 
 export default connect(
   null,
-  { toggleTaskCompleted, editTask, deleteTask }
+  { toggleTaskCompleted, editTask, deleteTask, addSubtask }
 )(withStyles(styles)(Task));
