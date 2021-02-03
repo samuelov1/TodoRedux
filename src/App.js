@@ -1,25 +1,25 @@
-import logo from './logo.svg';
-import './App.css';
+import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
+import { CssBaseline } from "@material-ui/core";
+import { connect } from "react-redux";
+import { getDarkMode } from "./redux/selectors/theme";
+import ListContainer from "./components/ListContainer";
+import Navbar from "./components/Navbar";
 
-function App() {
+function App({ darkMode }) {
+  const currentTheme = darkMode ? "dark" : "light";
+  const theme = createMuiTheme({ palette: { type: currentTheme } });
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Navbar />
+      <ListContainer />
+    </ThemeProvider>
   );
 }
+const mapStateToProps = state => {
+  const darkMode = getDarkMode(state);
+  return { darkMode };
+};
 
-export default App;
+export default connect(mapStateToProps)(App);
