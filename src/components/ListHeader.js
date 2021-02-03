@@ -2,6 +2,8 @@ import React from "react";
 import { Box, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 
+import OptionsMenu from "./OptionsMenu";
+
 const useStyle = makeStyles({
   header: {
     alignItems: "center",
@@ -24,6 +26,7 @@ const ListHeader = () => {
         Tasks
       </Typography>
       <Box className={classes.flexSpacer} />
+      <OptionsMenu />
     </Box>
   );
 };
