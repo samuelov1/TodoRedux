@@ -3,7 +3,7 @@ import { Container } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 
 import { connect } from "react-redux";
-import { getFilteredTasks } from "../redux/selectors";
+import { getFilteredTasks } from "../redux/selectors/tasks";
 import ListHeader from "./ListHeader";
 import TaskList from "./TaskList";
 import AddTask from "./AddTask";

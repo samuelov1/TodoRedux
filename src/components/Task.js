@@ -13,8 +13,7 @@ import {
   RadioButtonUnchecked,
   Edit,
   ExpandLess,
-  ExpandMore,
-  Add
+  ExpandMore
 } from "@material-ui/icons";
 import { withStyles } from "@material-ui/styles";
 import { connect } from "react-redux";
@@ -24,7 +23,7 @@ import {
   editTask,
   deleteTask,
   addSubtask
-} from "../redux/actions";
+} from "../redux/actions/tasks";
 import TaskContextMenu from "./TaskContextMenu";
 import TaskForm from "./TaskForm";
 import TaskList from "./TaskList";
