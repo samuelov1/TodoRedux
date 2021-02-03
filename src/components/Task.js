@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useState, useRef } from "react";
 import {
   ListItem,
   ListItemIcon,
@@ -15,7 +15,7 @@ import {
   ExpandLess,
   ExpandMore
 } from "@material-ui/icons";
-import { withStyles } from "@material-ui/styles";
+import { makeStyles } from "@material-ui/styles";
 import { connect } from "react-redux";
 
 import {
@@ -30,7 +30,7 @@ import TaskList from "./TaskList";
 import DeleteDialog from "./DeleteDialog";
 import AddTask from "./AddTask";
 
-const styles = ({ palette }) => ({
+const useStyles = makeStyles(({ palette }) => ({
   listItem: {
     padding: "3px 0px",
     borderBottom: "1px solid " + palette.divider
@@ -46,177 +46,143 @@ const styles = ({ palette }) => ({
   sublist: {
     marginLeft: "30px"
   }
-});
+}));
 
-class Task extends Component {
-  constructor(props) {
-    super(props);
+function Task({ toggleTaskCompleted, task, deleteTask, addSubtask }) {
+  const [editMode, setEditMode] = useState(false);
+  const [addSubtaskMode, setAddSubtaskMode] = useState(false);
+  const [sublistOpen, setSublistOpen] = useState(false);
 
-    this.state = {
-      editMode: false,
-      sublistOpen: false,
-      addSubtaskMode: false
-    };
+  const contextMenu = useRef(null);
+  const deleteDialog = useRef(null);
 
-    this.contextMenu = React.createRef();
-    this.deleteDialog = React.createRef();
-
-    this.handleClick = this.handleClick.bind(this);
-    this.toggleEditMode = this.toggleEditMode.bind(this);
-    this.handleEdit = this.handleEdit.bind(this);
-    this.handleDelete = this.handleDelete.bind(this);
-    this.toggleSublist = this.toggleSublist.bind(this);
-    this.toggleAddSubtask = this.toggleAddSubtask.bind(this);
-    this.handleAddSublist = this.handleAddSublist.bind(this);
-  }
-
-  handleClick(e) {
-    if (!this.state.editMode) {
-      this.contextMenu.current.open(e);
+  const handleRightClick = e => {
+    if (!editMode) {
+      contextMenu.current.open(e);
     }
-  }
+  };
 
-  toggleEditMode() {
-    this.setState(state => ({
-      editMode: !state.editMode
-    }));
-  }
+  const handleEdit = editedTask => {
+    setEditMode(false);
+    editTask(editedTask);
+  };
 
-  handleEdit(editedTask) {
-    this.toggleEditMode();
-    this.props.editTask(editedTask);
-  }
-
-  handleDelete() {
-    this.deleteDialog.current.open();
-  }
-
-  toggleAddSubtask() {
-    if (this.props.task.subtasks) {
-      this.setState({ sublistOpen: true, addSubtaskMode: true });
-    } else {
-      this.setState(state => ({ addSubtaskMode: !state.addSubtaskMode }));
+  const handleAddSubtask = () => {
+    if (task.subtasks) {
+      setSublistOpen(true);
     }
-  }
+    setAddSubtaskMode(true);
+  };
 
-  toggleSublist() {
-    this.setState(state => ({ sublistOpen: !state.sublistOpen }));
-  }
+  const handleAddSublist = subtask => {
+    const parentTaskId = task.id;
+    addSubtask(subtask, parentTaskId);
+    setSublistOpen(true);
+  };
 
-  handleAddSublist(subtask) {
-    this.props.addSubtask(subtask, this.props.task.id);
-    this.setState({ sublistOpen: true });
-  }
+  const classes = useStyles();
+  const { id, content, isCompleted, subtasks } = task;
 
-  render() {
-    const { id, content, isCompleted, subtasks } = this.props.task;
-    const { classes, toggleTaskCompleted, task, deleteTask } = this.props;
-    const { editMode, addSubtaskMode, sublistOpen } = this.state;
-
-    if (editMode) {
-      return (
-        <ListItem>
-          <ListItemIcon className={classes.editIcon}>
-            <Edit />
-          </ListItemIcon>
-          <TaskForm
-            task={task}
-            onCancel={this.toggleEditMode}
-            onSubmit={this.handleEdit}
-          />
-        </ListItem>
-      );
-    }
-
-    let secondaryText = null;
-    let sublist = null;
-    let expandListButton = null;
-
-    if (subtasks) {
-      const completedCount = subtasks.filter(task => task.isCompleted).length;
-      const totalCount = subtasks.length;
-
-      secondaryText = `${completedCount}/${totalCount} subtasks completed`;
-
-      sublist = (
-        <Collapse
-          className={classes.sublist}
-          in={sublistOpen}
-          timeout="auto"
-          unmountOnExit
-        >
-          <TaskList tasks={subtasks} />
-          <AddTask parentTaskId={id} />
-        </Collapse>
-      );
-
-      expandListButton = (
-        <ListItemSecondaryAction>
-          <IconButton
-            edge="end"
-            aria-label="delete"
-            onClick={this.toggleSublist}
-          >
-            {sublistOpen ? <ExpandLess /> : <ExpandMore />}
-          </IconButton>
-        </ListItemSecondaryAction>
-      );
-    } else if (addSubtaskMode) {
-      sublist = (
-        <div className={classes.sublist}>
-          <ListItem>
-            <TaskForm
-              onCancel={this.toggleAddSubtask}
-              onSubmit={this.handleAddSublist}
-            />
-          </ListItem>
-        </div>
-      );
-    }
-
+  if (editMode) {
     return (
-      <div className={classes.root}>
-        <ListItem
-          className={classes.listItem}
-          onContextMenu={this.handleClick}
-          button
-          disableRipple
+      <ListItem>
+        <ListItemIcon className={classes.editIcon}>
+          <Edit />
+        </ListItemIcon>
+        <TaskForm
+          task={task}
+          onCancel={() => setEditMode(false)}
+          onSubmit={handleEdit}
+        />
+      </ListItem>
+    );
+  }
+
+  let secondaryText = null;
+  let sublist = null;
+  let expandListButton = null;
+
+  if (subtasks) {
+    const completedCount = subtasks.filter(task => task.isCompleted).length;
+    const totalCount = subtasks.length;
+
+    secondaryText = `${completedCount}/${totalCount} subtasks completed`;
+
+    sublist = (
+      <Collapse
+        className={classes.sublist}
+        in={sublistOpen}
+        timeout="auto"
+        unmountOnExit
+      >
+        <TaskList tasks={subtasks} />
+        <AddTask parentTaskId={id} />
+      </Collapse>
+    );
+
+    expandListButton = (
+      <ListItemSecondaryAction>
+        <IconButton
+          edge="end"
+          aria-label="delete"
+          onClick={() => setSublistOpen(open => !open)}
         >
-          <ListItemIcon>
-            <Checkbox
-              icon={<RadioButtonUnchecked />}
-              checkedIcon={<CheckCircle color="action" />}
-              tabIndex={2}
-              disableRipple
-              checked={isCompleted}
-              onChange={() => toggleTaskCompleted(id)}
-            />
-          </ListItemIcon>
-          <ListItemText
-            className={isCompleted ? classes.completed : ""}
-            id={`text-label-${id}`}
-            primary={content}
-            secondary={secondaryText}
+          {sublistOpen ? <ExpandLess /> : <ExpandMore />}
+        </IconButton>
+      </ListItemSecondaryAction>
+    );
+  } else if (addSubtaskMode) {
+    sublist = (
+      <div className={classes.sublist}>
+        <ListItem>
+          <TaskForm
+            onCancel={() => setAddSubtaskMode(false)}
+            onSubmit={handleAddSublist}
           />
-          {expandListButton}
         </ListItem>
-        <TaskContextMenu
-          ref={this.contextMenu}
-          onEdit={this.toggleEditMode}
-          onDelete={this.handleDelete}
-          onAddSubtask={this.toggleAddSubtask}
-        />
-        <DeleteDialog
-          ref={this.deleteDialog}
-          onConfirm={() => deleteTask(id)}
-        />
-        {sublist}
       </div>
     );
   }
+
+  return (
+    <div className={classes.root}>
+      <ListItem
+        className={classes.listItem}
+        onContextMenu={handleRightClick}
+        button
+        disableRipple
+      >
+        <ListItemIcon>
+          <Checkbox
+            icon={<RadioButtonUnchecked />}
+            checkedIcon={<CheckCircle color="action" />}
+            tabIndex={2}
+            disableRipple
+            checked={isCompleted}
+            onChange={() => toggleTaskCompleted(id)}
+          />
+        </ListItemIcon>
+        <ListItemText
+          className={isCompleted ? classes.completed : ""}
+          id={`text-label-${id}`}
+          primary={content}
+          secondary={secondaryText}
+        />
+        {expandListButton}
+      </ListItem>
+      <TaskContextMenu
+        ref={contextMenu}
+        onEdit={() => setEditMode(true)}
+        onDelete={() => deleteDialog.current.open()}
+        onAddSubtask={handleAddSubtask}
+      />
+      <DeleteDialog ref={deleteDialog} onConfirm={() => deleteTask(id)} />
+      {sublist}
+    </div>
+  );
 }
 
 export default connect(
   null,
   { toggleTaskCompleted, editTask, deleteTask, addSubtask }
-)(withStyles(styles)(Task));
+)(Task);
