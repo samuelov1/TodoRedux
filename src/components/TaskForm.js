@@ -17,10 +17,12 @@ class TaskForm extends Component {
   constructor(props) {
     super(props);
 
+    let editMode = props.task !== undefined;
+    let tempTask = editMode ? props.task : { content: "" };
+
     this.state = {
-      tempTask: {
-        content: ""
-      }
+      editMode,
+      tempTask
     };
 
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -35,7 +37,7 @@ class TaskForm extends Component {
 
   handleChange(e) {
     const updatedTask = {
-      ...this.statetempTask,
+      ...this.state.tempTask,
       [e.target.id]: e.target.value
     };
     this.setState({ tempTask: updatedTask });
@@ -43,7 +45,7 @@ class TaskForm extends Component {
 
   render() {
     const { classes, onCancel } = this.props;
-    const { content } = this.state.tempTask;
+    const { editMode, tempTask } = this.state;
 
     return (
       <form className={classes.form} onSubmit={this.handleSubmit}>
@@ -54,7 +56,7 @@ class TaskForm extends Component {
           className={classes.textField}
           variant="outlined"
           size="small"
-          value={content}
+          value={tempTask.content}
           autoFocus
         />
         <Box className={classes.formBottomSection} display="flex">
@@ -64,7 +66,7 @@ class TaskForm extends Component {
             variant="contained"
             color="secondary"
           >
-            Add
+            {editMode ? "Edit" : "Add"}
           </Button>
         </Box>
       </form>
