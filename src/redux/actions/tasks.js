@@ -14,19 +14,6 @@ export const toggleTaskCompleted = id => ({
   payload: id
 });
 
-export const toggleShowCompleted = () => ({
-  type: "TOGGLE_SHOW_COMPLETED"
-});
-
-export const setSelectedSortingOption = id => ({
-  type: "SET_SELECTED_SORTING_OPTION",
-  payload: id
-});
-
-export const toggleSortReversed = () => ({
-  type: "TOGGLE_SORT_REVERSED"
-});
-
 export const editTask = task => ({
   type: "EDIT_TASK",
   payload: task
@@ -35,10 +22,6 @@ export const editTask = task => ({
 export const deleteTask = id => ({
   type: "DELETE_TASK",
   payload: id
-});
-
-export const toggleDarkMode = () => ({
-  type: "TOGGLE_DARK_MODE"
 });
 
 export const addSubtask = (subtask, parentId) => ({

@@ -5,7 +5,7 @@ import { withStyles } from "@material-ui/styles";
 import { connect } from "react-redux";
 
 import TaskForm from "./TaskForm";
-import { addTask, addSubtask } from "../redux/actions";
+import { addTask, addSubtask } from "../redux/actions/tasks";
 
 const styles = {
   root: {
