@@ -1,6 +1,12 @@
 import React, { Component } from "react";
-import { Menu, MenuItem, ListItemIcon, ListItemText } from "@material-ui/core";
-import { Edit } from "@material-ui/icons";
+import {
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
+  Divider
+} from "@material-ui/core";
+import { Edit, Delete, SubdirectoryArrowRight } from "@material-ui/icons";
 
 export default class TaskContextMenu extends Component {
   constructor(props) {
@@ -13,6 +19,8 @@ export default class TaskContextMenu extends Component {
 
     this.handleClose = this.handleClose.bind(this);
     this.handleEdit = this.handleEdit.bind(this);
+    this.handleDelete = this.handleDelete.bind(this);
+    this.handleAddSubtask = this.handleAddSubtask.bind(this);
     this.open = this.open.bind(this);
   }
 
@@ -36,6 +44,16 @@ export default class TaskContextMenu extends Component {
     this.props.onEdit();
   }
 
+  handleDelete() {
+    this.handleClose();
+    this.props.onDelete();
+  }
+
+  handleAddSubtask() {
+    this.handleClose();
+    this.props.onAddSubtask();
+  }
+
   render() {
     const { mouseX, mouseY } = this.state;
 
@@ -56,6 +74,19 @@ export default class TaskContextMenu extends Component {
             <Edit />
           </ListItemIcon>
           <ListItemText>Edit</ListItemText>
+        </MenuItem>
+        <MenuItem onClick={this.handleAddSubtask} dense>
+          <ListItemIcon>
+            <SubdirectoryArrowRight />
+          </ListItemIcon>
+          <ListItemText>Add Subtask</ListItemText>
+        </MenuItem>
+        <Divider />
+        <MenuItem onClick={this.handleDelete} dense>
+          <ListItemIcon>
+            <Delete />
+          </ListItemIcon>
+          <ListItemText>Delete</ListItemText>
         </MenuItem>
       </Menu>
     );
