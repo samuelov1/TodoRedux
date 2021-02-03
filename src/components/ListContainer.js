@@ -2,9 +2,12 @@ import React from "react";
 import { Container } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 
+import { connect } from "react-redux";
+import { getFilteredTasks } from "../redux/selectors/tasks";
 import ListHeader from "./ListHeader";
 import TaskList from "./TaskList";
 import AddTask from "./AddTask";
+import ListSortingPanel from "./ListSortingPanel";
 
 const useStyle = makeStyles({
   container: {
@@ -12,15 +15,21 @@ const useStyle = makeStyles({
   }
 });
 
-const ListContainer = () => {
+const ListContainer = ({ tasks }) => {
   const classes = useStyle();
   return (
     <Container className={classes.container} maxWidth="md">
       <ListHeader />
-      <TaskList />
+      <ListSortingPanel />
+      <TaskList tasks={tasks} />
       <AddTask />
     </Container>
   );
 };
 
-export default ListContainer;
+const mapStateToProps = state => {
+  const tasks = getFilteredTasks(state);
+  return { tasks };
+};
+
+export default connect(mapStateToProps)(ListContainer);
