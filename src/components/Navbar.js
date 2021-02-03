@@ -7,8 +7,8 @@ import {
   Switch
 } from "@material-ui/core";
 import { connect } from "react-redux";
-import { toggleDarkMode } from "../redux/actions";
-import { getDarkMode } from "../redux/selectors";
+import { toggleDarkMode } from "../redux/actions/theme";
+import { getDarkMode } from "../redux/selectors/theme";
 
 const useStyles = makeStyles({
   root: {
