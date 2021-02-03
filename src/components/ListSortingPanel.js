@@ -3,11 +3,14 @@ import { connect } from "react-redux";
 import { makeStyles, Box, Chip, Button } from "@material-ui/core";
 import { Sort, ArrowUpward, ArrowDownward } from "@material-ui/icons";
 
-import { setSelectedSortingOption, toggleSortReversed } from "../redux/actions";
+import {
+  setSelectedSortingOption,
+  toggleSortReversed
+} from "../redux/actions/filters";
 import {
   getSelectedSortingOption,
   getIsSortingReversed
-} from "../redux/selectors";
+} from "../redux/selectors/filters";
 
 const useStyle = makeStyles({
   root: {

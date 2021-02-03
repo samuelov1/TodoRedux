@@ -14,13 +14,13 @@ import { connect } from "react-redux";
 import {
   toggleShowCompleted,
   setSelectedSortingOption
-} from "../redux/actions";
+} from "../redux/actions/filters";
 
 import {
   getShowCompletedTasks,
   getSortingOptions,
   getSelectedSortingOption
-} from "../redux/selectors";
+} from "../redux/selectors/filters";
 
 class OptionsMenu extends Component {
   constructor(props) {
@@ -52,10 +52,15 @@ class OptionsMenu extends Component {
 
   render() {
     const { anchorEl } = this.state;
-    const { showCompletedTasks, sortingOptions, selectedSortingOption } = this.props;
+    const {
+      showCompletedTasks,
+      sortingOptions,
+      selectedSortingOption
+    } = this.props;
 
     const sortingOptionsMenuItems = sortingOptions.map(option => {
-      const isSelected = (selectedSortingOption && option.id === selectedSortingOption.id) ;
+      const isSelected =
+        selectedSortingOption && option.id === selectedSortingOption.id;
 
       return (
         <MenuItem
