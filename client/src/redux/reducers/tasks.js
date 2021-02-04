@@ -1,22 +1,32 @@
 const initialState = {
-  tasks: [
-    {
-      id: 1,
-      content: "Wash the dishes",
-      isCompleted: false,
-      subtasks: [
-        { id: 4, content: "Wash the cup", isCompleted: false },
-        { id: 5, content: "Wash the fork", isCompleted: true },
-        { id: 6, content: "Clean the sink", isCompleted: false }
-      ]
-    },
-    { id: 2, content: "Do homework", isCompleted: true },
-    { id: 3, content: "Walk the dog", isCompleted: false }
-  ]
+  tasks: [],
+  isLoading: false,
+  isError: false
 };
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
+    case "FETCH_STARTED": {
+      return {
+        ...state,
+        isLoading: true,
+        isError: false
+      };
+    }
+    case "FETCH_COMPLETED": {
+      return {
+        tasks: action.payload,
+        isLoading: false,
+        isError: false
+      };
+    }
+    case "FETCH_FAILED": {
+      return {
+        ...state,
+        isLoading: false,
+        isError: true
+      };
+    }
     case "ADD_TODO": {
       return {
         tasks: [...state.tasks, action.payload]

@@ -26,3 +26,11 @@ export const getFilteredTasks = store => {
 
   return tasks;
 };
+
+export const getIsLoading = store => {
+  return getTasksState(store).isLoading;
+};
+
+export const getIsError = store => {
+  return getTasksState(store).isError;
+};

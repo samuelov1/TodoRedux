@@ -102,7 +102,7 @@ function Task({ toggleTaskCompleted, task, deleteTask, addSubtask }) {
   let sublist = null;
   let expandListButton = null;
 
-  if (subtasks) {
+  if (subtasks.length > 0) {
     const completedCount = subtasks.filter(task => task.isCompleted).length;
     const totalCount = subtasks.length;
 

@@ -1,9 +1,20 @@
-let nextId = 7;
+import axios from "axios";
+
+export const fetchTasks = () => async dispatch => {
+  dispatch({ type: "FETCH_STARTED" });
+
+  try {
+    const response = await axios.get(`http://localhost:5000/tasks`);
+    dispatch({ type: "FETCH_COMPLETED", payload: response.data });
+  } catch (error) {
+    dispatch({ type: "FETCH_FAILED" });
+  }
+};
 
 export const addTask = task => ({
   type: "ADD_TODO",
   payload: {
-    id: ++nextId,
+    id: Math.random() * 1000,
     isCompleted: false,
     ...task
   }
@@ -28,7 +39,7 @@ export const addSubtask = (subtask, parentId) => ({
   type: "ADD_SUBTASK",
   payload: {
     subtask: {
-      id: ++nextId,
+      id: Math.random() * 1000,
       isCompleted: false,
       ...subtask
     },
