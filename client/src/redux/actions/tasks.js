@@ -1,38 +1,45 @@
-import axios from "axios";
+import * as api from "../../api/tasks";
 
-export const fetchTasks = () => async dispatch => {
+export const fetchTasks = () => async (dispatch) => {
   dispatch({ type: "FETCH_STARTED" });
 
   try {
-    const response = await axios.get(`http://localhost:5000/tasks`);
-    dispatch({ type: "FETCH_COMPLETED", payload: response.data });
+    const response = await api.fetchTasks();
+    dispatch({
+      type: "FETCH_COMPLETED",
+      payload: response.data,
+    });
   } catch (error) {
     dispatch({ type: "FETCH_FAILED" });
   }
 };
 
-export const addTask = task => ({
+export const setTaskCompleted = (id, isCompleted) => async (dispatch) => {
+  try {
+    const response = await api.setTaskCompleted(id, isCompleted);
+    dispatch({ type: "REPLACE_TASK", payload: response.data });
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const addTask = (task) => ({
   type: "ADD_TODO",
   payload: {
     id: Math.random() * 1000,
     isCompleted: false,
-    ...task
-  }
+    ...task,
+  },
 });
 
-export const toggleTaskCompleted = id => ({
-  type: "TOGGLE_TASK_COMPLETED",
-  payload: id
-});
-
-export const editTask = task => ({
+export const editTask = (task) => ({
   type: "EDIT_TASK",
-  payload: task
+  payload: task,
 });
 
-export const deleteTask = id => ({
+export const deleteTask = (id) => ({
   type: "DELETE_TASK",
-  payload: id
+  payload: id,
 });
 
 export const addSubtask = (subtask, parentId) => ({
@@ -41,8 +48,8 @@ export const addSubtask = (subtask, parentId) => ({
     subtask: {
       id: Math.random() * 1000,
       isCompleted: false,
-      ...subtask
+      ...subtask,
     },
-    parentId
-  }
+    parentId,
+  },
 });

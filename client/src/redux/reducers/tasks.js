@@ -1,7 +1,7 @@
 const initialState = {
   tasks: [],
   isLoading: false,
-  isError: false
+  isError: false,
 };
 
 const reducer = (state = initialState, action) => {
@@ -10,72 +10,45 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         isLoading: true,
-        isError: false
+        isError: false,
       };
     }
     case "FETCH_COMPLETED": {
       return {
         tasks: action.payload,
         isLoading: false,
-        isError: false
+        isError: false,
       };
     }
     case "FETCH_FAILED": {
       return {
         ...state,
         isLoading: false,
-        isError: true
+        isError: true,
+      };
+    }
+    case "REPLACE_TASK": {
+      const newTask = action.payload;
+      const updatedTasks = state.tasks.map((task) => {
+        if (task._id === newTask._id) return newTask;
+        return task;
+      });
+
+      return {
+        ...state,
+        tasks: updatedTasks,
       };
     }
     case "ADD_TODO": {
       return {
-        tasks: [...state.tasks, action.payload]
-      };
-    }
-    case "TOGGLE_TASK_COMPLETED": {
-      const id = action.payload;
-
-      const setCompletedRecursivly = (task, isCompleted) => {
-        if (task.subtasks) {
-          const updatedSubtasks = task.subtasks.map(task =>
-            setCompletedRecursivly(task, isCompleted)
-          );
-          return { ...task, isCompleted, subtasks: updatedSubtasks };
-        }
-        return { ...task, isCompleted };
-      };
-
-      const updateTasks = tasks => {
-        return tasks.map(task => {
-          if (task.id === id) {
-            return setCompletedRecursivly(task, !task.isCompleted);
-          }
-
-          if (task.subtasks) {
-            const updatedSubtasks = updateTasks(task.subtasks);
-            const subtasksCompleted = updatedSubtasks.every(
-              task => task.isCompleted
-            );
-            return {
-              ...task,
-              subtasks: updatedSubtasks,
-              isCompleted: subtasksCompleted
-            };
-          }
-
-          return task;
-        });
-      };
-
-      return {
-        tasks: updateTasks(state.tasks)
+        tasks: [...state.tasks, action.payload],
       };
     }
     case "EDIT_TASK": {
       const editedTask = action.payload;
 
-      const updateTasks = tasks => {
-        return tasks.map(task => {
+      const updateTasks = (tasks) => {
+        return tasks.map((task) => {
           if (task.id === editedTask.id) {
             return editedTask;
           }
@@ -89,16 +62,16 @@ const reducer = (state = initialState, action) => {
       };
 
       return {
-        tasks: updateTasks(state.tasks)
+        tasks: updateTasks(state.tasks),
       };
     }
     case "DELETE_TASK": {
       const id = action.payload;
 
-      const filterTasks = tasks => {
-        const filteredTasks = tasks.filter(task => task.id !== id);
+      const filterTasks = (tasks) => {
+        const filteredTasks = tasks.filter((task) => task.id !== id);
 
-        return filteredTasks.map(task => {
+        return filteredTasks.map((task) => {
           if (task.subtasks) {
             const filteredSubtasks = filterTasks(task.subtasks);
 
@@ -115,14 +88,14 @@ const reducer = (state = initialState, action) => {
       };
 
       return {
-        tasks: filterTasks(state.tasks)
+        tasks: filterTasks(state.tasks),
       };
     }
     case "ADD_SUBTASK": {
       const { subtask, parentId } = action.payload;
 
-      const addSubtask = tasks => {
-        return tasks.map(task => {
+      const addSubtask = (tasks) => {
+        return tasks.map((task) => {
           if (task.id === parentId) {
             if (task.subtasks === undefined) task.subtasks = [];
             const updatedSubtasks = [...task.subtasks, subtask];
@@ -138,7 +111,7 @@ const reducer = (state = initialState, action) => {
       };
 
       return {
-        tasks: addSubtask(state.tasks)
+        tasks: addSubtask(state.tasks),
       };
     }
     default:
