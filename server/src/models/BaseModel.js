@@ -15,6 +15,20 @@ class BaseModel {
     await this.client.close();
   }
 
+  static async findById(id) {
+    const collection = this.db.collection(this.collectionName);
+    const result = await collection.findOne({ _id: id });
+
+    return this.modelFactory(result);
+  }
+
+  static async findOneAndUpdate(...args) {
+    const collection = this.db.collection(this.collectionName);
+    const result = await collection.findOneAndUpdate(...args);
+
+    return this.modelFactory(result.value);
+  }
+
   static async find(...args) {
     const collection = this.db.collection(this.collectionName);
     const result = await collection.find(...args).toArray();
