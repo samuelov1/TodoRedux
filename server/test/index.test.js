@@ -1,10 +1,10 @@
 import mongoUnit from "mongo-unit";
-import BaseModel from "../src/models/BaseModel";
+import DB from "../src/DB";
 
 (async () => {
   const uri = await mongoUnit.start();
   const parsedUri = uri.substring(0, uri.lastIndexOf("/"));
-  await BaseModel.connect(
+  await DB.connect(
     { uri: parsedUri, db: "test" },
     { useUnifiedTopology: true }
   );
@@ -15,5 +15,5 @@ import BaseModel from "../src/models/BaseModel";
 
 after(async () => {
   await mongoUnit.stop();
-  await BaseModel.disconnect();
+  await DB.disconnect();
 });
