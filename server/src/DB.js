@@ -16,13 +16,14 @@ class DB {
   }
 
   static async find(collectionName, query = {}, options = {}) {
-    const collection = this.db.collection(collectionName);
-    return collection.find(query, options).toArray();
+    return this.db
+      .collection(collectionName)
+      .find(query, options)
+      .toArray();
   }
 
   static async findOne(collectionName, query = {}, options = {}) {
-    const collection = this.db.collection(collectionName);
-    return collection.findOne(query, options);
+    return this.db.collection(collectionName).findOne(query, options);
   }
 }
 

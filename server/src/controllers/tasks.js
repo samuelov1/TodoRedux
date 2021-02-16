@@ -6,7 +6,6 @@ export const getAllTasks = (req, res) => {
   findAllTasks()
     .then((results) => res.send(results))
     .catch((error) => {
-      console.error(error);
       res.status(500).send(error);
     });
 };
@@ -29,7 +28,6 @@ export const getById = (req, res) => {
   findById(id)
     .then((result) => res.send(result))
     .catch((error) => {
-      console.error(error);
-      res.status(500).send(error);
+      res.status(404).send(error);
     });
 };

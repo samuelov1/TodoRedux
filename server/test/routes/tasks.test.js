@@ -1,6 +1,7 @@
 import chai, { expect } from "chai";
 import chaiHttp from "chai-http";
 import mongoUnit from "mongo-unit";
+import { ObjectId } from "mongodb";
 
 import generateTestData from "../testData";
 import { generateExpectedTasks } from "../helper";
@@ -39,6 +40,19 @@ describe("Tasks route", () => {
           expect(err).to.be.null;
           expect(res.body).to.deep.equal(expected);
           expect(res).to.have.status(200);
+          done();
+        });
+    });
+
+    it("Should return error if no task was found", (done) => {
+      const id = ObjectId();
+
+      chai
+        .request(server)
+        .get(`/tasks/${id}`)
+        .end((err, res) => {
+          expect(err).to.be.null;
+          expect(res).to.have.status(404);
           done();
         });
     });

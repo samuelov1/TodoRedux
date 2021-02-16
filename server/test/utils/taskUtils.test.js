@@ -1,9 +1,13 @@
-import { expect } from "chai";
+import chai, { expect } from "chai";
+import chaiAsPromised from "chai-as-promised";
 import mongoUnit from "mongo-unit";
+import { ObjectId } from "mongodb";
 
 import generateTestData from "../testData";
 import { findAllTasks, findById } from "../../src/utils/taskUtils";
 import { generateExpectedTasks } from "../helper";
+
+chai.use(chaiAsPromised);
 
 const expectedTasks = generateExpectedTasks();
 
@@ -26,6 +30,12 @@ describe("Task utils", () => {
       const task = await findById(expected._id);
 
       expect(task).to.deep.equal(expected);
+    });
+
+    it("Should throw error if no tasks where found", async () => {
+      const id = ObjectId();
+
+      expect(findById(id)).to.be.rejectedWith(Error);
     });
   });
 });
