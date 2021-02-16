@@ -7,7 +7,9 @@
   "private": true,
   "scripts": {
     "test": "mocha",
-    "client": "node client/scripts/start.js"
+    "client": "node client/scripts/start.js",
+    "server": "nodemon --exec babel-node ./server/index.js",
+    "dev": "npm-run-all -p client server"
   },
   "repository": {
     "type": "git",
@@ -20,6 +22,18 @@
     "url": "https://github.com/samuelov1/TodoRedux/issues"
   },
   "homepage": "https://github.com/samuelov1/TodoRedux#readme",
+  "devDependencies": {
+    "@babel/cli": "^7.12.13",
+    "@babel/core": "^7.12.13",
+    "@babel/node": "^7.12.13",
+    "@babel/plugin-transform-runtime": "^7.12.13",
+    "@babel/preset-env": "^7.12.13",
+    "@babel/register": "^7.12.13",
+    "chai": "^4.3.0",
+    "chai-http": "^4.3.0",
+    "mocha": "^8.2.1",
+    "nodemon": "^2.0.7"
+  },
   "dependencies": {
     "@material-ui/core": "^4.11.3",
     "@material-ui/icons": "^4.11.2",
