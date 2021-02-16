@@ -1,17 +1,17 @@
 import axios from "axios";
 
-export const fetchTasks = () => async dispatch => {
+export const fetchTasks = () => async (dispatch) => {
   dispatch({ type: "FETCH_STARTED" });
 
   try {
-    const response = await axios.get(`http://localhost:5000/tasks`);
+    const response = await axios.get(`/tasks`);
     dispatch({ type: "FETCH_COMPLETED", payload: response.data });
   } catch (error) {
     dispatch({ type: "FETCH_FAILED" });
   }
 };
 
-export const addTask = task => ({
+export const addTask = (task) => ({
   type: "ADD_TODO",
   payload: {
     id: Math.random() * 1000,
@@ -20,17 +20,17 @@ export const addTask = task => ({
   }
 });
 
-export const toggleTaskCompleted = id => ({
+export const toggleTaskCompleted = (id) => ({
   type: "TOGGLE_TASK_COMPLETED",
   payload: id
 });
 
-export const editTask = task => ({
+export const editTask = (task) => ({
   type: "EDIT_TASK",
   payload: task
 });
 
-export const deleteTask = id => ({
+export const deleteTask = (id) => ({
   type: "DELETE_TASK",
   payload: id
 });
