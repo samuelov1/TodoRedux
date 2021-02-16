@@ -12,6 +12,8 @@ export const findAllTasks = async () => {
 };
 
 export const populateTask = async (task) => {
+  if (task.subtasks.length === 0) return task;
+
   const query = {
     parentId: ObjectId(task._id)
   };
