@@ -5,7 +5,7 @@ import { ObjectId } from "mongodb";
 
 import generateTestData from "../testData";
 import { generateExpectedTasks } from "../helper";
-import server from "../../src/server";
+import { app } from "../../src/server";
 const expectedTasks = generateExpectedTasks(true);
 
 chai.use(chaiHttp);
@@ -18,7 +18,7 @@ describe("Tasks route", () => {
   describe("GET: /tasks", () => {
     it("Should return a list of tasks", (done) => {
       chai
-        .request(server)
+        .request(app)
         .get("/tasks")
         .end((err, res) => {
           expect(err).to.be.null;
@@ -34,7 +34,7 @@ describe("Tasks route", () => {
       const expected = expectedTasks[0];
 
       chai
-        .request(server)
+        .request(app)
         .get(`/tasks/${expected._id}`)
         .end((err, res) => {
           expect(err).to.be.null;
@@ -48,7 +48,7 @@ describe("Tasks route", () => {
       const id = ObjectId();
 
       chai
-        .request(server)
+        .request(app)
         .get(`/tasks/${id}`)
         .end((err, res) => {
           expect(err).to.be.null;
