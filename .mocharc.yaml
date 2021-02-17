@@ -1,0 +1,8 @@
+require:
+  - 'core-js'
+  - 'regenerator-runtime'
+  - '@babel/register'
+recursive: true
+delay: true
+exit: true
+spec: './server/test/**'
