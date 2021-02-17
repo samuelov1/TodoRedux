@@ -8,7 +8,7 @@ export default () => ({
       isCompleted: false,
       subtasks: [
         ObjectId("601baf200eaac592041a693d"),
-        ObjectId("601bae6c0eaac592041a693b")
+        ObjectId("601bafb50eaac592041a6940")
       ]
     },
     {
@@ -30,8 +30,8 @@ export default () => ({
       isCompleted: false,
       parentId: ObjectId("601bae6c0eaac592041a693b"),
       subtasks: [
-        ObjectId("601bafb50eaac592041a6940"),
-        ObjectId("601bafb50eaac592041a6940")
+        ObjectId("601bafb50eaac592041a6941"),
+        ObjectId("601bafb50eaac592041a6942")
       ]
     },
     {
