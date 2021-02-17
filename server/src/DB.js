@@ -25,6 +25,18 @@ class DB {
   static async findOne(collectionName, query = {}, options = {}) {
     return this.db.collection(collectionName).findOne(query, options);
   }
+
+  static async findOneAndUpdate(
+    collectionName,
+    filter = {},
+    update = {},
+    options = {}
+  ) {
+    const result = await this.db
+      .collection(collectionName)
+      .findOneAndUpdate(filter, update, options);
+    return result.value;
+  }
 }
 
 DB.db = {};
