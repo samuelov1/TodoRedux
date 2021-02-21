@@ -59,17 +59,18 @@ describe("Tasks route", () => {
     });
   });
 
-  describe("PATCH: /tasks/:id/completed/:isCompleted", () => {
+  describe("PATCH: /tasks/:id/completed", () => {
     it("Should set task completed and return updated ancestor", (done) => {
       const task = testUtils.getLongestPath(expectedTasks).ancestor;
-      const isCompleted = true;
+      const patch = { isCompleted: true };
 
       chai
         .request(app)
-        .patch(`/tasks/${task._id}/completed/${isCompleted}`)
+        .patch(`/tasks/${task._id}/completed`)
+        .send(patch)
         .end((err, res) => {
           const updatedAncestor = res.body;
-          expect(updatedAncestor.isCompleted).to.equal(isCompleted);
+          expect(updatedAncestor.isCompleted).to.equal(patch.isCompleted);
           expect(err).to.be.null;
           expect(res).to.have.status(200);
           done();
@@ -78,10 +79,12 @@ describe("Tasks route", () => {
 
     it("Should return error if no task was found", (done) => {
       const id = ObjectId();
+      const patch = { isCompleted: true };
 
       chai
         .request(app)
-        .patch(`/tasks/${id}/completed/true`)
+        .patch(`/tasks/${id}/completed`)
+        .send(patch)
         .end((err, res) => {
           expect(err).to.be.null;
           expect(res).to.have.status(404);
@@ -91,10 +94,12 @@ describe("Tasks route", () => {
 
     it("Should return error if invalid id is given", (done) => {
       const id = "123 123*";
+      const patch = { isCompleted: true };
 
       chai
         .request(app)
-        .patch(`/tasks/${id}/completed/true`)
+        .patch(`/tasks/${id}/completed`)
+        .send(patch)
         .end((err, res) => {
           expect(err).to.be.null;
           expect(res).to.have.status(422);
@@ -104,11 +109,12 @@ describe("Tasks route", () => {
 
     it("Should return error if invalid isCompleted is given", (done) => {
       const id = ObjectId();
-      const isCompleted = "invalidBoolean";
+      const patch = { isComplete: "invalidBoolean" };
 
       chai
         .request(app)
-        .patch(`/tasks/${id}/completed/${isCompleted}`)
+        .patch(`/tasks/${id}/completed`)
+        .send(patch)
         .end((err, res) => {
           expect(err).to.be.null;
           expect(res).to.have.status(422);

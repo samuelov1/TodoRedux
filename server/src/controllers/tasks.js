@@ -1,5 +1,3 @@
-import joi from "joi";
-
 import {
   findAllTasks,
   findById,
@@ -15,18 +13,6 @@ export const getAllTasks = (req, res) => {
 };
 
 export const getById = (req, res) => {
-  const schema = joi.object().keys({
-    id: joi
-      .string()
-      .alphanum()
-      .required()
-  });
-
-  const error = schema.validate(req.params).error;
-  if (error) {
-    return res.status(422).send(error);
-  }
-
   const id = req.params.id;
 
   findById(id)
@@ -37,24 +23,8 @@ export const getById = (req, res) => {
 };
 
 export const setCompletedById = (req, res) => {
-  const schema = joi.object().keys({
-    id: joi
-      .string()
-      .alphanum()
-      .required(),
-    isCompleted: joi
-      .string()
-      .valid("true", "false")
-      .required()
-  });
-
-  const error = schema.validate(req.params).error;
-  if (error) {
-    return res.status(422).send(error);
-  }
-
   const id = req.params.id;
-  const isCompleted = req.params.isCompleted === "true";
+  const isCompleted = req.body.isCompleted;
 
   setCompletedAndUpdateAncestor(id, isCompleted)
     .then((result) => res.send(result))
