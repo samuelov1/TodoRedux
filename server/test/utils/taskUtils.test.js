@@ -11,6 +11,7 @@ import {
   updateParentTask,
   setCompletedAndUpdateAncestor
 } from "../../src/utils/taskUtils";
+import NotFoundError from "../../src/errors/NotFoundError";
 import * as testUtils from "../testUtils";
 
 chai.use(chaiAsPromised);
@@ -41,7 +42,7 @@ describe("Task utils", () => {
     it("Should throw error if no tasks where found", async () => {
       const id = ObjectId();
 
-      expect(findById(id)).to.be.rejectedWith(Error);
+      expect(findById(id)).to.be.rejectedWith(NotFoundError);
     });
   });
 
@@ -67,7 +68,9 @@ describe("Task utils", () => {
     it("Should throw error if no task was found", async () => {
       const id = ObjectId();
 
-      expect(setCompletedRecursively(id, true)).to.be.rejectedWith(Error);
+      expect(setCompletedRecursively(id, true)).to.be.rejectedWith(
+        NotFoundError
+      );
     });
   });
 
@@ -99,7 +102,7 @@ describe("Task utils", () => {
 
     it("Should throw error if no task was found", async () => {
       const id = ObjectId();
-      expect(updateParentTask(id)).to.be.rejectedWith(Error);
+      expect(updateParentTask(id)).to.be.rejectedWith(NotFoundError);
     });
   });
 
@@ -123,7 +126,9 @@ describe("Task utils", () => {
     it("Should throw error if no task was found", async () => {
       const id = ObjectId();
 
-      expect(setCompletedAndUpdateAncestor(id, true)).to.be.rejectedWith(Error);
+      expect(setCompletedAndUpdateAncestor(id, true)).to.be.rejectedWith(
+        NotFoundError
+      );
     });
   });
 });

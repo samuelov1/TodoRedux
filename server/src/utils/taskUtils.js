@@ -1,5 +1,6 @@
 import DB from "../DB";
 import { ObjectId } from "mongodb";
+import NotFoundError from "../errors/NotFoundError";
 
 const collectionName = "tasks";
 
@@ -28,7 +29,7 @@ export const findById = async (id) => {
   const task = await DB.findOne(collectionName, { _id: ObjectId(id) });
 
   if (!task) {
-    throw Error(`Could not find task with the given ID: ${id}`);
+    throw new NotFoundError(`Could not find task with the given ID: ${id}`);
   }
 
   const populatedTask = await populateTask(task);
@@ -59,17 +60,13 @@ export const setCompletedRecursively = async (id, isCompleted) => {
     options
   );
 
-  if (!task) throw Error(`Could not find task with ID: ${id}`);
+  if (!task) throw new NotFoundError(`Could not find task with ID: ${id}`);
 
-  if (task.subtasks.length !== 0) {
-    const updatedSubtasks = await Promise.all(
-      task.subtasks.map((subtaskId) =>
-        setCompletedRecursively(subtaskId, isCompleted)
-      )
-    );
-
-    task.subtasks = updatedSubtasks;
-  }
+  task.subtasks = await Promise.all(
+    task.subtasks.map((subtaskId) =>
+      setCompletedRecursively(subtaskId, isCompleted)
+    )
+  );
 
   return task;
 };
@@ -78,7 +75,9 @@ export const updateParentTask = async (parentId, task) => {
   const parentTask = await DB.findOne(collectionName, {
     _id: ObjectId(parentId)
   });
-  if (!parentTask) throw Error(`Could not find task with ID: ${parentId}`);
+  if (!parentTask) {
+    throw new NotFoundError(`Could not find task with ID: ${parentId}`);
+  }
 
   const query = { parentId: ObjectId(parentId) };
   if (task) query._id = { $ne: task._id };
