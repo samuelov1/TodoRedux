@@ -3,6 +3,7 @@ import DB from "./DB";
 import dotenv from "dotenv";
 
 import taskRoutes from "./routes/tasks";
+import { errorHandler } from "./middleware/errorHandler";
 
 dotenv.config();
 
@@ -12,6 +13,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.use("/tasks", taskRoutes);
+
+app.use(errorHandler);
 
 const init = async () => {
   return DB.connect(

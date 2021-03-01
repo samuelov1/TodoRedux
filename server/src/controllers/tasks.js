@@ -1,33 +1,28 @@
-import joi from "joi";
+import {
+  findAllTasks,
+  findById,
+  setCompletedAndUpdateAncestor
+} from "../utils/taskUtils";
 
-import { findAllTasks, findById } from "../utils/taskUtils";
-
-export const getAllTasks = (req, res) => {
+export const getAllTasks = (req, res, next) => {
   findAllTasks()
     .then((results) => res.send(results))
-    .catch((error) => {
-      res.status(500).send(error);
-    });
+    .catch(next);
 };
 
-export const getById = (req, res) => {
-  const schema = joi.object().keys({
-    id: joi
-      .string()
-      .alphanum()
-      .required()
-  });
-
-  const error = schema.validate(req.params).error;
-  if (error) {
-    return res.status(422).send(error);
-  }
-
+export const getById = (req, res, next) => {
   const id = req.params.id;
 
   findById(id)
     .then((result) => res.send(result))
-    .catch((error) => {
-      res.status(404).send(error);
-    });
+    .catch(next);
+};
+
+export const setCompletedById = (req, res, next) => {
+  const id = req.params.id;
+  const isCompleted = req.body.isCompleted;
+
+  setCompletedAndUpdateAncestor(id, isCompleted)
+    .then((result) => res.send(result))
+    .catch(next);
 };
