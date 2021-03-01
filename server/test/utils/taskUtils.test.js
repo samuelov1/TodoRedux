@@ -9,7 +9,9 @@ import {
   findById,
   setCompletedRecursively,
   updateParentTask,
-  setCompletedAndUpdateAncestor
+  setCompletedAndUpdateAncestor,
+  deleteTaskRecursively,
+  deleteTaskAndUpdateAncestor
 } from "../../src/utils/taskUtils";
 import NotFoundError from "../../src/errors/NotFoundError";
 import * as testUtils from "../testUtils";
@@ -129,6 +131,49 @@ describe("Task utils", () => {
       expect(setCompletedAndUpdateAncestor(id, true)).to.be.rejectedWith(
         NotFoundError
       );
+    });
+  });
+
+  describe("Delete task recursively", () => {
+    it("Should return deleted task", async () => {
+      const longestPath = testUtils.getLongestPath(expectedTasks);
+      const task = longestPath.ancestor;
+      const subtask = longestPath.leaf;
+
+      const deletedTask = await deleteTaskRecursively(task._id);
+
+      expect(deletedTask._id).to.deep.equal(task._id);
+      expect(findById(subtask._id)).to.be.rejectedWith(NotFoundError);
+    });
+
+    it("Should throw error if no task was found", async () => {
+      const id = ObjectId();
+
+      expect(deleteTaskRecursively(id)).to.be.rejectedWith(NotFoundError);
+    });
+  });
+
+  describe("Delete task and update ancestor", () => {
+    it("Should set task completed and return updated ancestor", async () => {
+      const longestPath = testUtils.getLongestPath(expectedTasks);
+      const ancestor = longestPath.ancestor;
+      const subtask = ancestor.subtasks[0];
+
+      await setCompletedRecursively(ancestor._id, true);
+      await setCompletedAndUpdateAncestor(subtask._id, false);
+
+      const updatedAncestor = await deleteTaskAndUpdateAncestor(subtask._id);
+
+      expect(updatedAncestor.isCompleted).to.be.true;
+      expect(updatedAncestor.subtasks.length).to.equal(
+        ancestor.subtasks.length - 1
+      );
+    });
+
+    it("Should throw error if no task was found", async () => {
+      const id = ObjectId();
+
+      expect(deleteTaskAndUpdateAncestor(id)).to.be.rejectedWith(NotFoundError);
     });
   });
 });
