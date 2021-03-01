@@ -134,3 +134,33 @@ export const updateParentTask = async (parentId, task) => {
     throw err;
   }
 };
+
+export const deleteTaskAndUpdateAncestor = async (id) => {
+  try {
+    const deletedTask = await deleteTaskRecursively(id);
+    if (!deletedTask.parentId) return deletedTask;
+
+    const updatedAncestor = await updateParentTask(deletedTask.parentId);
+
+    return updatedAncestor;
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const deleteTaskRecursively = async (id) => {
+  try {
+    const task = await DB.findOneAndDelete(collectionName, {
+      _id: ObjectId(id)
+    });
+    if (!task) {
+      throw new NotFoundError(`Could not find task with the given ID: ${id}`);
+    }
+
+    await Promise.all(task.subtasks.map(deleteTaskRecursively));
+
+    return task;
+  } catch (err) {
+    throw err;
+  }
+};

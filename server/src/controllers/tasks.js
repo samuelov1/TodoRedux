@@ -1,7 +1,8 @@
 import {
   findAllTasks,
   findById,
-  setCompletedAndUpdateAncestor
+  setCompletedAndUpdateAncestor,
+  deleteTaskAndUpdateAncestor
 } from "../utils/taskUtils";
 
 export const getAllTasks = (req, res, next) => {
@@ -23,6 +24,14 @@ export const setCompletedById = (req, res, next) => {
   const isCompleted = req.body.isCompleted;
 
   setCompletedAndUpdateAncestor(id, isCompleted)
+    .then((result) => res.send(result))
+    .catch(next);
+};
+
+export const deleteById = (req, res, next) => {
+  const id = req.params.id;
+
+  deleteTaskAndUpdateAncestor(id)
     .then((result) => res.send(result))
     .catch(next);
 };
