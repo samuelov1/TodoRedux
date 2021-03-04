@@ -9,6 +9,7 @@
     "test": "mocha",
     "client": "node client/scripts/start.js",
     "server": "nodemon --exec babel-node ./server/index.js",
+    "debug": "nodemon --exec babel-node --inspect ./server/index.js",
     "dev": "npm-run-all -p client server"
   },
   "repository": {
