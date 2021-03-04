@@ -140,6 +140,23 @@ export const deleteTaskAndUpdateAncestor = async (id) => {
     const deletedTask = await deleteTaskRecursively(id);
     if (!deletedTask.parentId) return deletedTask;
 
+    const filter = { _id: deletedTask.parentId };
+    const update = { $pull: { subtasks: deletedTask._id } };
+    const options = { returnOriginal: false };
+
+    const updatedParent = await DB.findOneAndUpdate(
+      collectionName,
+      filter,
+      update,
+      options
+    );
+
+    if (!updatedParent) {
+      throw new NotFoundError(
+        `Could not find task with ID: ${deletedTask.parentId}`
+      );
+    }
+
     const updatedAncestor = await updateParentTask(deletedTask.parentId);
 
     return updatedAncestor;
