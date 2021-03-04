@@ -122,4 +122,73 @@ describe("Tasks route", () => {
         });
     });
   });
+
+  describe("DELETE: /tasks/:id", () => {
+    it("Should delete task and return it", (done) => {
+      const task = testUtils.getLongestPath(expectedTasks).ancestor;
+
+      chai
+        .request(app)
+        .delete(`/tasks/${task._id}`)
+        .end((err, res) => {
+          const deleteTask = res.body;
+          expect(deleteTask._id).to.deep.equal(task._id);
+          expect(err).to.be.null;
+          expect(res).to.have.status(200);
+          done();
+        });
+    });
+
+    it("Should return updated parent task if deletion has affected it", async () => {
+      const requester = chai.request(app).keepOpen();
+      const longestPath = testUtils.getLongestPath(expectedTasks);
+      const ancestor = longestPath.ancestor;
+      const subtask = ancestor.subtasks[0];
+
+      await requester
+        .patch(`/tasks/${ancestor._id}/completed`)
+        .send({ isCompleted: true });
+
+      await requester
+        .patch(`/tasks/${subtask._id}/completed`)
+        .send({ isCompleted: false });
+
+      const response = await requester.delete(`/tasks/${subtask._id}`);
+      const updatedAncestor = response.body;
+
+      expect(response).to.have.status(200);
+      expect(updatedAncestor.isCompleted).to.be.true;
+      expect(updatedAncestor.subtasks.length).to.equal(
+        ancestor.subtasks.length - 1
+      );
+
+      requester.close();
+    });
+
+    it("Should return error if invalid id is given", (done) => {
+      const id = "123 123*";
+
+      chai
+        .request(app)
+        .delete(`/tasks/${id}`)
+        .end((err, res) => {
+          expect(err).to.be.null;
+          expect(res).to.have.status(422);
+          done();
+        });
+    });
+
+    it("Should return error if no task with given Id was found", (done) => {
+      const id = ObjectId();
+
+      chai
+        .request(app)
+        .delete(`/tasks/${id}`)
+        .end((err, res) => {
+          expect(err).to.be.null;
+          expect(res).to.have.status(404);
+          done();
+        });
+    });
+  });
 });

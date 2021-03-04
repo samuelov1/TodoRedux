@@ -37,6 +37,13 @@ class DB {
       .findOneAndUpdate(filter, update, options);
     return result.value;
   }
+
+  static async findOneAndDelete(collectionName, filter = {}, options = {}) {
+    const result = await this.db
+      .collection(collectionName)
+      .findOneAndDelete(filter, options);
+    return result.value;
+  }
 }
 
 DB.db = {};
