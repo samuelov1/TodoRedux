@@ -191,4 +191,85 @@ describe("Tasks route", () => {
         });
     });
   });
+
+  describe("POST: /tasks", () => {
+    it("Should return inserted task if it has not parentId", (done) => {
+      const taskToInsert = {
+        content: "New task"
+      };
+
+      chai
+        .request(app)
+        .post(`/tasks`)
+        .send(taskToInsert)
+        .end((err, res) => {
+          const insertedTask = res.body;
+          expect(err).to.be.null;
+          expect(res).to.have.status(201);
+          expect(insertedTask._id).to.exist;
+          expect(insertedTask.isCompleted).to.be.false;
+          expect(insertedTask.subtasks).to.be.empty;
+          done();
+        });
+    });
+
+    it("Should return updated ancestor if task caused a change in the parent", async () => {
+      const requester = chai.request(app).keepOpen();
+      const { ancestor } = testUtils.getLongestPath(expectedTasks);
+      const taskToInsert = {
+        content: "New task",
+        parentId: ancestor._id
+      };
+
+      await requester
+        .patch(`/tasks/${ancestor._id}/completed`)
+        .send({ isCompleted: true });
+
+      const response = await requester.post(`/tasks`).send(taskToInsert);
+      const updatedAncestor = response.body;
+
+      expect(response).to.have.status(201);
+      expect(updatedAncestor._id).to.equal(ancestor._id);
+      expect(updatedAncestor.isCompleted).to.be.false;
+      expect(updatedAncestor.subtasks).to.have.lengthOf.above(
+        ancestor.subtasks.length
+      );
+
+      requester.close();
+    });
+
+    it("Should return error if given task is with invalid format", (done) => {
+      const invalidTask = {
+        isCompleted: false,
+        parentId: "123"
+      };
+
+      chai
+        .request(app)
+        .post(`/tasks`)
+        .send(invalidTask)
+        .end((err, res) => {
+          expect(err).to.be.null;
+          expect(res).to.have.status(422);
+          done();
+        });
+    });
+
+    it("Should return error if given task is with invalid format", (done) => {
+      const invalidTask = {
+        isCompleted: false,
+        parentId: "123"
+      };
+
+      chai
+        .request(app)
+        .post(`/tasks`)
+        .send(invalidTask)
+        .end((err, res) => {
+          expect(err).to.be.null;
+          expect(res).to.have.status(422);
+          done();
+        });
+    });
+  });
 });

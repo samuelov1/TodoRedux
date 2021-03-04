@@ -11,7 +11,8 @@ import {
   updateParentTask,
   setCompletedAndUpdateAncestor,
   deleteTaskRecursively,
-  deleteTaskAndUpdateAncestor
+  deleteTaskAndUpdateAncestor,
+  insertTask
 } from "../../src/utils/taskUtils";
 import NotFoundError from "../../src/errors/NotFoundError";
 import * as testUtils from "../testUtils";
@@ -174,6 +175,44 @@ describe("Task utils", () => {
       const id = ObjectId();
 
       expect(deleteTaskAndUpdateAncestor(id)).to.be.rejectedWith(NotFoundError);
+    });
+  });
+
+  describe("Insert task", () => {
+    it("Should return inserted task", async () => {
+      const taskToInsert = {
+        content: "New task"
+      };
+      const insertedTask = await insertTask(taskToInsert);
+
+      expect(insertedTask._id).to.exist;
+    });
+
+    it("Should return updated ancestor if task caused a change in the parent ", async () => {
+      const { ancestor } = testUtils.getLongestPath(expectedTasks);
+      const taskToInsert = {
+        content: "New task",
+        parentId: ancestor._id
+      };
+
+      await setCompletedRecursively(ancestor._id, true);
+
+      const updatedAncestor = await insertTask(taskToInsert);
+
+      expect(updatedAncestor._id).to.deep.equal(ancestor._id);
+      expect(updatedAncestor.isCompleted).to.be.false;
+      expect(updatedAncestor.subtasks).to.have.lengthOf.above(
+        ancestor.subtasks.length
+      );
+    });
+
+    it("Should throw error if task has non-existant parent", async () => {
+      const taskToInsert = {
+        content: "New task",
+        parentId: ObjectId()
+      };
+
+      await expect(insertTask(taskToInsert)).to.be.rejectedWith(NotFoundError);
     });
   });
 });
