@@ -26,3 +26,15 @@ export const setCompletedSchema = joi
     })
   })
   .unknown(true);
+
+export const taskSchema = joi
+  .object()
+  .keys({
+    body: joi.object({
+      content: joi.string().required(),
+      isCompleted: joi.boolean().default(false),
+      parentId: joi.string(),
+      subtasks: joi.array().default([])
+    })
+  })
+  .unknown(true);

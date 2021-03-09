@@ -44,6 +44,13 @@ class DB {
       .findOneAndDelete(filter, options);
     return result.value;
   }
+
+  static async insertOne(collectionName, data, options = {}) {
+    const result = await this.db
+      .collection(collectionName)
+      .insertOne(data, options);
+    return result.ops[0];
+  }
 }
 
 DB.db = {};
