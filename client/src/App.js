@@ -1,16 +1,19 @@
-import { CssBaseline } from "@material-ui/core";
 import { QueryClient, QueryClientProvider } from "react-query";
+import ErrorSnackbar from "./components/ErrorSnackbar";
 import ListContainer from "./components/ListContainer";
 import Navbar from "./components/Navbar";
+import ErrorProvider from "./components/providers/ErrorProvider";
 
 function App() {
   const queryClient = new QueryClient();
 
   return (
     <QueryClientProvider client={queryClient}>
-      <CssBaseline />
-      <Navbar />
-      <ListContainer />
+      <ErrorProvider>
+        <Navbar />
+        <ListContainer />
+        <ErrorSnackbar />
+      </ErrorProvider>
     </QueryClientProvider>
   );
 }

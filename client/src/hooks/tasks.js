@@ -4,23 +4,24 @@ import {
   optimisticSetCompletedById,
   optimisticAddTask,
   optimisticRemoveTask,
-  optimisticUpdateTask
+  optimisticUpdateTask,
 } from "./optimisticMutations";
 import {
   fetchAllTasks,
   setCompletedById,
   addTask,
   removeTask,
-  updateTask
+  updateTask,
 } from "../api/tasks";
 import { useFilterState } from "../components/providers/FilterProvider";
+import { useErrors } from "../components/providers/ErrorProvider";
 
 const queryName = "tasks";
 
 export const useTasks = () =>
   useQuery("tasks", fetchAllTasks, {
     refetchOnWindowFocus: false,
-    initialData: []
+    initialData: [],
   });
 
 const filterTasks = (
@@ -68,6 +69,8 @@ const createOptimisticMutation = (
   mutateFn,
   optimisticUpdateFn
 ) => {
+  const { addError } = useErrors();
+
   return useMutation(mutateFn, {
     onMutate: async (args) => {
       await queryClient.cancelQueries(queryName);
@@ -80,9 +83,10 @@ const createOptimisticMutation = (
 
       return previousValue;
     },
-    onError: (err, variables, previousValue) => {
+    onError: ({ response }, variables, previousValue) => {
+      addError(response.statusText, response.status);
       queryClient.setQueryData(queryName, previousValue);
-    }
+    },
   });
 };
 
