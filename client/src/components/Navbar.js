@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import {
   makeStyles,
   AppBar,
@@ -6,9 +6,7 @@ import {
   Typography,
   Switch
 } from "@material-ui/core";
-import { connect } from "react-redux";
-import { toggleDarkMode } from "../redux/actions/theme";
-import { getDarkMode } from "../redux/selectors/theme";
+import { CustomThemeContext } from "./providers/CustomThemeProvider";
 
 const useStyles = makeStyles({
   root: {
@@ -19,8 +17,9 @@ const useStyles = makeStyles({
   }
 });
 
-const Navbar = ({ darkMode, toggleDarkMode }) => {
+const Navbar = () => {
   const classes = useStyles();
+  const { darkMode, toggleDarkMode } = useContext(CustomThemeContext);
 
   return (
     <div className={classes.root}>
@@ -30,19 +29,11 @@ const Navbar = ({ darkMode, toggleDarkMode }) => {
             Todo
           </Typography>
           <div className={classes.spacer} />
-          <Switch checked={darkMode} onChange={toggleDarkMode} />
+          <Switch checked={darkMode} onChange={() => toggleDarkMode()} />
         </Toolbar>
       </AppBar>
     </div>
   );
 };
 
-const mapStateToProps = store => {
-  const darkMode = getDarkMode(store);
-  return { darkMode };
-};
-
-export default connect(
-  mapStateToProps,
-  { toggleDarkMode }
-)(Navbar);
+export default Navbar;

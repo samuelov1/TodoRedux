@@ -1,16 +1,7 @@
 import React from "react";
-import { connect } from "react-redux";
 import { makeStyles, Box, Chip, Button } from "@material-ui/core";
 import { Sort, ArrowUpward, ArrowDownward } from "@material-ui/icons";
-
-import {
-  setSelectedSortingOption,
-  toggleSortReversed
-} from "../redux/actions/filters";
-import {
-  getSelectedSortingOption,
-  getIsSortingReversed
-} from "../redux/selectors/filters";
+import { useFilterDispatch, useFilterState } from "./providers/FilterProvider";
 
 const useStyle = makeStyles({
   root: {
@@ -28,19 +19,12 @@ const useStyle = makeStyles({
   }
 });
 
-const ListSortingPanel = ({
-  selectedSortingOption,
-  isSortingReversed,
-  setSelectedSortingOption,
-  toggleSortReversed
-}) => {
+const ListSortingPanel = () => {
   const classes = useStyle();
+  const dispatch = useFilterDispatch();
+  const { selectedSortingOption, isReversed } = useFilterState();
 
-  if (selectedSortingOption === null) return null;
-
-  const handleDelete = () => {
-    setSelectedSortingOption(null);
-  };
+  if (!selectedSortingOption) return null;
 
   const label = `Sorted by ${selectedSortingOption.name}`;
 
@@ -50,32 +34,24 @@ const ListSortingPanel = ({
         className={classes.chip}
         icon={<Sort />}
         label={label}
-        onDelete={handleDelete}
+        onDelete={() =>
+          dispatch({ type: "SET_SELECTED_SORTING_OPTION", payload: null })
+        }
       />
       <Button
-        onClick={toggleSortReversed}
+        onClick={() =>
+          dispatch({ type: "TOGGLE_SORT_REVERSED", payload: null })
+        }
         className={classes.chip}
         size="small"
         color="default"
         variant="contained"
         disableElevation
       >
-        {isSortingReversed ? <ArrowUpward /> : <ArrowDownward />}
+        {isReversed ? <ArrowUpward /> : <ArrowDownward />}
       </Button>
     </Box>
   );
 };
 
-const mapStateToProps = state => {
-  const selectedSortingOption = getSelectedSortingOption(state);
-  const isSortingReversed = getIsSortingReversed(state);
-  return {
-    selectedSortingOption,
-    isSortingReversed
-  };
-};
-
-export default connect(
-  mapStateToProps,
-  { setSelectedSortingOption, toggleSortReversed }
-)(ListSortingPanel);
+export default ListSortingPanel;

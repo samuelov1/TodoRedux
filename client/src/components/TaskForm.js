@@ -1,7 +1,7 @@
-import React, { Component } from "react";
-import { Box, TextField, Button, withStyles } from "@material-ui/core";
+import React, { useState } from "react";
+import { Box, TextField, Button, makeStyles } from "@material-ui/core";
 
-const styles = {
+const useStyles = makeStyles({
   form: {
     flex: 1
   },
@@ -11,67 +11,51 @@ const styles = {
   formBottomSection: {
     marginTop: "10px"
   }
+});
+
+const TaskForm = ({ task, onSubmit, onCancel }) => {
+  const classes = useStyles();
+  const editMode = task !== undefined;
+  const initialTempTask = { content: "" };
+  const [tempTask, setTempTask] = useState(() =>
+    editMode ? task : initialTempTask
+  );
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (tempTask.content !== "") {
+      onSubmit(tempTask);
+      setTempTask(initialTempTask);
+    }
+  };
+
+  const handleChange = (e) => {
+    setTempTask((prevState) => ({
+      ...prevState,
+      [e.target.id]: e.target.value
+    }));
+  };
+
+  return (
+    <form className={classes.form} onSubmit={handleSubmit}>
+      <TextField
+        id="content"
+        onChange={handleChange}
+        placeholder="What do you want to do?"
+        className={classes.textField}
+        variant="outlined"
+        size="small"
+        value={tempTask.content}
+        autoFocus
+      />
+      <Box className={classes.formBottomSection} display="flex">
+        <Button onClick={onCancel}>Cancel</Button>
+        <Button onClick={handleSubmit} variant="contained" color="secondary">
+          {editMode ? "Edit" : "Add"}
+        </Button>
+      </Box>
+    </form>
+  );
 };
 
-class TaskForm extends Component {
-  constructor(props) {
-    super(props);
-
-    let editMode = props.task !== undefined;
-    let tempTask = editMode ? props.task : { content: "" };
-
-    this.state = {
-      editMode,
-      tempTask
-    };
-
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleChange = this.handleChange.bind(this);
-  }
-
-  handleSubmit(e) {
-    e.preventDefault();
-    this.props.onSubmit(this.state.tempTask);
-    this.setState({ tempTask: { content: "" } });
-  }
-
-  handleChange(e) {
-    const updatedTask = {
-      ...this.state.tempTask,
-      [e.target.id]: e.target.value
-    };
-    this.setState({ tempTask: updatedTask });
-  }
-
-  render() {
-    const { classes, onCancel } = this.props;
-    const { editMode, tempTask } = this.state;
-
-    return (
-      <form className={classes.form} onSubmit={this.handleSubmit}>
-        <TextField
-          id="content"
-          onChange={this.handleChange}
-          placeholder="What do you want to do?"
-          className={classes.textField}
-          variant="outlined"
-          size="small"
-          value={tempTask.content}
-          autoFocus
-        />
-        <Box className={classes.formBottomSection} display="flex">
-          <Button onClick={onCancel}>Cancel</Button>
-          <Button
-            onClick={this.handleSubmit}
-            variant="contained"
-            color="secondary"
-          >
-            {editMode ? "Edit" : "Add"}
-          </Button>
-        </Box>
-      </form>
-    );
-  }
-}
-
-export default withStyles(styles)(TaskForm);
+export default TaskForm;

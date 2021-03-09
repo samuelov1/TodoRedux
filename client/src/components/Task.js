@@ -6,7 +6,8 @@ import {
   ListItemText,
   Collapse,
   ListItemSecondaryAction,
-  IconButton
+  IconButton,
+  List
 } from "@material-ui/core";
 import {
   CheckCircle,
@@ -16,19 +17,19 @@ import {
   ExpandMore
 } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/styles";
-import { connect } from "react-redux";
 
-import {
-  toggleTaskCompleted,
-  editTask,
-  deleteTask,
-  addSubtask
-} from "../redux/actions/tasks";
 import TaskContextMenu from "./TaskContextMenu";
 import TaskForm from "./TaskForm";
 import TaskList from "./TaskList";
 import DeleteDialog from "./DeleteDialog";
 import AddTask from "./AddTask";
+import {
+  useSetCompletedMutation,
+  useAddTaskMutation,
+  useRemoveTaskMutation,
+  useUpdateTaskMutation
+} from "../hooks/tasks";
+import { useQueryClient } from "react-query";
 
 const useStyles = makeStyles(({ palette }) => ({
   listItem: {
@@ -48,40 +49,43 @@ const useStyles = makeStyles(({ palette }) => ({
   }
 }));
 
-function Task({ toggleTaskCompleted, task, deleteTask, addSubtask }) {
+const Task = ({ task }) => {
+  const classes = useStyles();
   const [editMode, setEditMode] = useState(false);
   const [addSubtaskMode, setAddSubtaskMode] = useState(false);
   const [sublistOpen, setSublistOpen] = useState(false);
 
+  const queryClient = useQueryClient();
+  const { mutate: setTaskCompleted } = useSetCompletedMutation(queryClient);
+  const { mutate: addTask } = useAddTaskMutation(queryClient);
+  const { mutate: removeTask } = useRemoveTaskMutation(queryClient);
+  const { mutate: updateTask } = useUpdateTaskMutation(queryClient);
+
   const contextMenu = useRef(null);
   const deleteDialog = useRef(null);
 
-  const handleRightClick = e => {
+  const handleRightClick = (e) => {
     if (!editMode) {
       contextMenu.current.open(e);
     }
   };
 
-  const handleEdit = editedTask => {
+  const handleEdit = (editedTask) => {
     setEditMode(false);
-    editTask(editedTask);
+    updateTask(editedTask);
   };
 
   const handleAddSubtask = () => {
-    if (task.subtasks) {
+    if (task.subtasks.length > 0) {
       setSublistOpen(true);
     }
     setAddSubtaskMode(true);
   };
 
-  const handleAddSublist = subtask => {
-    const parentTaskId = task.id;
-    addSubtask(subtask, parentTaskId);
+  const handleAddSublist = (subtask) => {
+    addTask({ ...subtask, parentId: id });
     setSublistOpen(true);
   };
-
-  const classes = useStyles();
-  const { id, content, isCompleted, subtasks } = task;
 
   if (editMode) {
     return (
@@ -98,13 +102,18 @@ function Task({ toggleTaskCompleted, task, deleteTask, addSubtask }) {
     );
   }
 
+  const { _id: id, content, isCompleted, subtasks, parentId } = task;
+
   let secondaryText = null;
   let sublist = null;
   let expandListButton = null;
 
   if (subtasks.length > 0) {
-    const completedCount = subtasks.filter(task => task.isCompleted).length;
+    const completedCount = subtasks.filter((task) => task.isCompleted).length;
     const totalCount = subtasks.length;
+    const subtasksList = subtasks.map((task) => {
+      return <Task key={task._id} task={task} />;
+    });
 
     secondaryText = `${completedCount}/${totalCount} subtasks completed`;
 
@@ -115,8 +124,8 @@ function Task({ toggleTaskCompleted, task, deleteTask, addSubtask }) {
         timeout="auto"
         unmountOnExit
       >
-        <TaskList tasks={subtasks} />
-        <AddTask parentTaskId={id} />
+        <List>{subtasksList}</List>
+        <AddTask parentId={id} />
       </Collapse>
     );
 
@@ -125,7 +134,7 @@ function Task({ toggleTaskCompleted, task, deleteTask, addSubtask }) {
         <IconButton
           edge="end"
           aria-label="delete"
-          onClick={() => setSublistOpen(open => !open)}
+          onClick={() => setSublistOpen((open) => !open)}
         >
           {sublistOpen ? <ExpandLess /> : <ExpandMore />}
         </IconButton>
@@ -159,7 +168,9 @@ function Task({ toggleTaskCompleted, task, deleteTask, addSubtask }) {
             tabIndex={2}
             disableRipple
             checked={isCompleted}
-            onChange={() => toggleTaskCompleted(id)}
+            onChange={({ target }) =>
+              setTaskCompleted({ id, isCompleted: target.checked })
+            }
           />
         </ListItemIcon>
         <ListItemText
@@ -176,13 +187,10 @@ function Task({ toggleTaskCompleted, task, deleteTask, addSubtask }) {
         onDelete={() => deleteDialog.current.open()}
         onAddSubtask={handleAddSubtask}
       />
-      <DeleteDialog ref={deleteDialog} onConfirm={() => deleteTask(id)} />
+      <DeleteDialog ref={deleteDialog} onConfirm={() => removeTask(id)} />
       {sublist}
     </div>
   );
-}
+};
 
-export default connect(
-  null,
-  { toggleTaskCompleted, editTask, deleteTask, addSubtask }
-)(Task);
+export default Task;

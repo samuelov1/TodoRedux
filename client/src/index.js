@@ -2,13 +2,14 @@ import React from "react";
 import ReactDOM from "react-dom";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-import { Provider } from "react-redux";
-import store from "./redux/store";
+import CustomThemeProvider from "./components/providers/CustomThemeProvider";
+import { CssBaseline } from "@material-ui/core";
 
 ReactDOM.render(
-  <Provider store={store}>
+  <CustomThemeProvider>
+    <CssBaseline />
     <App />
-  </Provider>,
+  </CustomThemeProvider>,
   document.getElementById("root")
 );
 

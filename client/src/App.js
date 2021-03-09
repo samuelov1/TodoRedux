@@ -1,25 +1,18 @@
-import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import { CssBaseline } from "@material-ui/core";
-import { connect } from "react-redux";
-import { getDarkMode } from "./redux/selectors/theme";
+import { QueryClient, QueryClientProvider } from "react-query";
 import ListContainer from "./components/ListContainer";
 import Navbar from "./components/Navbar";
 
-function App({ darkMode }) {
-  const currentTheme = darkMode ? "dark" : "light";
-  const theme = createMuiTheme({ palette: { type: currentTheme } });
+function App() {
+  const queryClient = new QueryClient();
 
   return (
-    <ThemeProvider theme={theme}>
+    <QueryClientProvider client={queryClient}>
       <CssBaseline />
       <Navbar />
       <ListContainer />
-    </ThemeProvider>
+    </QueryClientProvider>
   );
 }
-const mapStateToProps = state => {
-  const darkMode = getDarkMode(state);
-  return { darkMode };
-};
 
-export default connect(mapStateToProps)(App);
+export default App;
