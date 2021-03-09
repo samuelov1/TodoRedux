@@ -5,7 +5,8 @@ import {
   getById,
   setCompletedById,
   deleteById,
-  addTask
+  addTask,
+  update
 } from "../controllers/tasks";
 import { validate } from "../middleware/validate";
 import {
@@ -21,5 +22,6 @@ route.get("/:id", validate(idSchema), getById);
 route.patch("/:id/completed", validate(setCompletedSchema), setCompletedById);
 route.delete("/:id", validate(idSchema), deleteById);
 route.post("/", validate(taskSchema), addTask);
+route.put("/", validate(taskSchema), update);
 
 export default route;
