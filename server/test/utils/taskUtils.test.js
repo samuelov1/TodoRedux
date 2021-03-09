@@ -12,7 +12,8 @@ import {
   setCompletedAndUpdateAncestor,
   deleteTaskRecursively,
   deleteTaskAndUpdateAncestor,
-  insertTask
+  insertTask,
+  updateTask
 } from "../../src/utils/taskUtils";
 import NotFoundError from "../../src/errors/NotFoundError";
 import * as testUtils from "../testUtils";
@@ -213,6 +214,26 @@ describe("Task utils", () => {
       };
 
       await expect(insertTask(taskToInsert)).to.be.rejectedWith(NotFoundError);
+    });
+  });
+
+  describe("Update task", () => {
+    it("Should return updated task", async () => {
+      const longestPath = testUtils.getLongestPath(expectedTasks);
+      const task = longestPath.ancestor;
+      const taskToUpdate = { ...task, content: "Updated Content" };
+
+      const updatedTask = await updateTask(taskToUpdate);
+
+      expect(updatedTask).to.deep.equal(taskToUpdate);
+    });
+
+    it("Should throw error if no task was found", async () => {
+      const invalidTask = {
+        _id: ObjectId()
+      };
+
+      expect(updateTask(invalidTask)).to.be.rejectedWith(NotFoundError);
     });
   });
 });
