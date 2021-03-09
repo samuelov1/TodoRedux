@@ -12,7 +12,8 @@ import { validate } from "../middleware/validate";
 import {
   idSchema,
   setCompletedSchema,
-  taskSchema
+  taskSchema,
+  updateTaskSchema
 } from "../middleware/requestSchemas";
 
 const route = express.Router();
@@ -22,6 +23,6 @@ route.get("/:id", validate(idSchema), getById);
 route.patch("/:id/completed", validate(setCompletedSchema), setCompletedById);
 route.delete("/:id", validate(idSchema), deleteById);
 route.post("/", validate(taskSchema), addTask);
-route.put("/", validate(taskSchema), update);
+route.put("/", validate(updateTaskSchema), update);
 
 export default route;
