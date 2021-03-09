@@ -21,7 +21,6 @@ const queryName = "tasks";
 export const useTasks = () =>
   useQuery("tasks", fetchAllTasks, {
     refetchOnWindowFocus: false,
-    initialData: [],
   });
 
 const filterTasks = (
@@ -30,6 +29,8 @@ const filterTasks = (
   showCompleted,
   isReversed
 ) => {
+  if (!tasks || tasks.length === 0) return [];
+
   const filter = (task) => showCompleted || !task.isCompleted;
   const sort = selectedSortingOption
     ? selectedSortingOption.sortFunction

@@ -1,9 +1,9 @@
 import React from "react";
 import { List } from "@material-ui/core";
-import { CircularProgress } from "@material-ui/core";
 import { Alert, AlertTitle } from "@material-ui/lab";
 import { useFilteredTasks } from "../hooks/tasks";
 import Task from "./Task";
+import Loader from "./Loader";
 
 const TaskList = () => {
   const { isLoading, isError, tasks } = useFilteredTasks();
@@ -17,9 +17,7 @@ const TaskList = () => {
     );
   }
 
-  if (isLoading) {
-    return <CircularProgress />;
-  }
+  if (isLoading) return <Loader />;
 
   const taskList = tasks.map((task) => {
     return <Task key={task._id} task={task} />;
