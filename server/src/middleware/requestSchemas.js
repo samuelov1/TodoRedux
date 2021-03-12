@@ -38,3 +38,19 @@ export const taskSchema = joi
     })
   })
   .unknown(true);
+
+export const updateTaskSchema = joi
+  .object()
+  .keys({
+    body: joi.object({
+      _id: joi
+        .string()
+        .alphanum()
+        .required(),
+      content: joi.string().required(),
+      isCompleted: joi.boolean().required(),
+      parentId: joi.string(),
+      subtasks: joi.array().required()
+    })
+  })
+  .unknown(true);

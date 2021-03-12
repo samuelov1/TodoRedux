@@ -216,3 +216,28 @@ export const insertTask = async (task) => {
     throw err;
   }
 };
+
+export const updateTask = async (task) => {
+  try {
+    const filter = { _id: ObjectId(task._id) };
+    const update = { $set: { content: task.content } };
+    const options = { returnOriginal: false };
+
+    const updatedTask = await DB.findOneAndUpdate(
+      collectionName,
+      filter,
+      update,
+      options
+    );
+
+    if (!updatedTask) {
+      throw new NotFoundError(
+        `Could not find task with the given ID: ${task._id}`
+      );
+    }
+
+    return task;
+  } catch (err) {
+    throw err;
+  }
+};

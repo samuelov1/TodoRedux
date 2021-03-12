@@ -3,7 +3,8 @@ import {
   findById,
   setCompletedAndUpdateAncestor,
   deleteTaskAndUpdateAncestor,
-  insertTask
+  insertTask,
+  updateTask
 } from "../utils/taskUtils";
 
 export const getAllTasks = (req, res, next) => {
@@ -41,6 +42,14 @@ export const addTask = (req, res, next) => {
   const taskToAdd = req.body;
 
   insertTask(taskToAdd)
+    .then((result) => res.status(201).send(result))
+    .catch(next);
+};
+
+export const update = (req, res, next) => {
+  const updatedTask = req.body;
+
+  updateTask(updatedTask)
     .then((result) => res.status(201).send(result))
     .catch(next);
 };

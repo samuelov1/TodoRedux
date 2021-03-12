@@ -272,4 +272,54 @@ describe("Tasks route", () => {
         });
     });
   });
+
+  describe("PUT: /tasks", () => {
+    it("Should return updated task", (done) => {
+      const task = expectedTasks[0];
+      const taskToUpdate = { ...task, content: "New content" };
+
+      chai
+        .request(app)
+        .put(`/tasks`)
+        .send(taskToUpdate)
+        .end((err, res) => {
+          expect(err).to.be.null;
+          expect(res.body).to.deep.equal(taskToUpdate);
+          expect(res).to.have.status(201);
+          done();
+        });
+    });
+
+    it("Should return error if invalid task was sent", (done) => {
+      const invalidTask = {
+        _id: ObjectId(),
+        content: 123
+      };
+
+      chai
+        .request(app)
+        .put(`/tasks`)
+        .send(invalidTask)
+        .end((err, res) => {
+          expect(err).to.be.null;
+          expect(res).to.have.status(422);
+          done();
+        });
+    });
+
+    it("Should return error if no task was found", (done) => {
+      const task = expectedTasks[0];
+      const taskToUpdate = { ...task, _id: ObjectId() };
+
+      chai
+        .request(app)
+        .put(`/tasks`)
+        .send(taskToUpdate)
+        .end((err, res) => {
+          expect(err).to.be.null;
+          expect(res).to.have.status(404);
+          done();
+        });
+    });
+  });
 });
